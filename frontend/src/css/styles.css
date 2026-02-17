@@ -1,0 +1,26 @@
+.my_font_family{
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#sidebar_head{
+    background-image: url("../assets/J0400003.PNG");
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    width: 192px;
+}
+
+#bt_text, #bt_text_main{
+    display: none;
+    box-shadow: 2px 2px 0px 0px black; 
+}
+#bt_text_main{
+    box-shadow: 2px 2px 0px 0px white;
+    white-space: nowrap;
+    right: 0;
+    top: 100%;
+}
+#bt_section:hover #bt_text,
+#bt_section:hover #bt_text_main{
+    display: block;
+}

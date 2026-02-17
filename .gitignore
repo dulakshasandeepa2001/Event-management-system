@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Lock files
+package-lock.json
+
+# Environment files
+.env
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
