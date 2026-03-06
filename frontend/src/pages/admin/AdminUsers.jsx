@@ -14,6 +14,7 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import API from '../../api';
+import { useTheme } from '../../context/ThemeContext.jsx';
 
 const defaultSummary = {
   totalAccounts: 0,
@@ -65,11 +66,18 @@ const roleAccessCards = [
   },
 ];
 
-const roleBadgeClasses = {
+const darkRoleBadgeClasses = {
   admin: 'bg-blue-500/20 text-blue-200 border-blue-500/30',
   lecturer: 'bg-cyan-500/20 text-cyan-200 border-cyan-500/30',
   batchrep: 'bg-emerald-500/20 text-emerald-200 border-emerald-500/30',
   student: 'bg-amber-500/20 text-amber-200 border-amber-500/30',
+};
+
+const lightRoleBadgeClasses = {
+  admin: 'bg-blue-500/15 text-black border-blue-400/30',
+  lecturer: 'bg-cyan-500/15 text-black border-cyan-400/30',
+  batchrep: 'bg-emerald-500/15 text-black border-emerald-400/30',
+  student: 'bg-amber-500/15 text-black border-amber-400/30',
 };
 
 const accountTypeBadgeClasses = {
@@ -77,10 +85,16 @@ const accountTypeBadgeClasses = {
   rep: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/30',
 };
 
-const statusBadgeClasses = {
+const darkStatusBadgeClasses = {
   active: 'bg-emerald-500/20 text-emerald-200 border-emerald-500/30',
   inactive: 'bg-rose-500/20 text-rose-200 border-rose-500/30',
   legacy: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/30',
+};
+
+const lightStatusBadgeClasses = {
+  active: 'bg-emerald-500/15 text-black border-emerald-400/30',
+  inactive: 'bg-rose-500/15 text-black border-rose-400/30',
+  legacy: 'bg-fuchsia-500/15 text-black border-fuchsia-400/30',
 };
 
 const roleOptions = [
@@ -98,6 +112,8 @@ const accountTypeOptions = [
 ];
 
 const AdminUsers = () => {
+  const { theme } = useTheme();
+  const isDarkTheme = theme === 'dark';
   const [accounts, setAccounts] = useState([]);
   const [summary, setSummary] = useState(defaultSummary);
   const [loading, setLoading] = useState(false);
@@ -108,6 +124,10 @@ const AdminUsers = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [accountTypeFilter, setAccountTypeFilter] = useState('all');
   const [pendingRoles, setPendingRoles] = useState({});
+
+  const roleBadgeClasses = isDarkTheme ? darkRoleBadgeClasses : lightRoleBadgeClasses;
+  const statusBadgeClasses = isDarkTheme ? darkStatusBadgeClasses : lightStatusBadgeClasses;
+  const rolePointClassName = isDarkTheme ? 'flex items-start gap-3 text-sm text-slate-100/90' : 'flex items-start gap-3 text-sm text-slate-900';
 
   useEffect(() => {
     const loadAccounts = async () => {
@@ -273,7 +293,7 @@ const AdminUsers = () => {
 
                 <div className="mt-5 space-y-3">
                   {card.points.map((point) => (
-                    <div key={point} className="flex items-start gap-3 text-sm text-slate-100/90">
+                    <div key={point} className={rolePointClassName}>
                       <FaCheckCircle className="mt-0.5 shrink-0 text-emerald-300" />
                       <span>{point}</span>
                     </div>
