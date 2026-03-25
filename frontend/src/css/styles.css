@@ -2,6 +2,10 @@
     font-family: 'Times New Roman', Times, serif;
 }
 
+button:hover{
+    cursor: pointer;
+}
+
 #sidebar_head{
     background-image: url("../assets/J0400003.PNG");
     background-size: cover;

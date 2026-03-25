@@ -1,59 +1,53 @@
 import React from 'react'
-import { FaBuilding, FaCalendarAlt, FaTachometerAlt,FaMoneyBillWave,FaUsers, FaCog, FaQuestion, } from 'react-icons/fa'
+import { FaBuilding, FaCalendarAlt, FaTachometerAlt, FaUsers, FaCog, FaQuestion } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom'  
-import { useNavigate } from 'react-router-dom';
 
 const BatchrepSidebar = () => {
 
-   const navigate = useNavigate(); 
-
    return (
-      <div className="fixed text-white bg-black flex h-screen w-48 my_font_family">
-         <div className='flex flex-col h-auto justify-between'>
-
-            <div>
-               {/* Sidebar image & top links */}
-               <div id="sidebar_head" className='flex items-center justify-center h-14'>
-                  <h3 className="flex items-center justify-center text-l text-center text-white my_font_family bg-gray-900 rounded py-1 space-x-1 w-20">
-                     <span>Uni</span>
-                     <span className="bg-white text-black rounded px-1">Hub</span>
-                  </h3> 
-               </div>
-               <div className="p-4">                                             
-                  <NavLink to="/admin-dashboard" className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                        flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`} end>   
-                     <FaTachometerAlt/> <span>Dashboard </span>
-                  </NavLink>
-                  <NavLink className={({isActive})=>`${isActive ? "bg-gray-800":" "} 
-                        flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`}>
-                     <FaUsers/> <span>Link1</span>
-                  </NavLink>
-                  <NavLink className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                        flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`}> 
-                     <FaBuilding/> < span>Link2</span>
-                  </NavLink>
-                  <NavLink className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                        flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`}>
-                        <FaCalendarAlt/> <span>Link3</span>
-                  </NavLink>
-                  <NavLink className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                        flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`}>
-                        <FaMoneyBillWave/> <span>Link4</span>
-                  </NavLink>
-               </div>
+      <div className="fixed text-white bg-[#0f1419] border-r border-gray-700 flex flex-col h-screen w-48 my_font_family">
+         
+         {/* Top Section */}
+         <div className="flex-1">
+            {/* Sidebar Logo */}
+            <div className='flex items-center justify-center h-16 border-b border-gray-700'>
+               <h3 className="flex items-center justify-center text-lg font-bold text-white my_font_family space-x-1">
+                  <span className="text-blue-500">Event</span>
+                  <span className="text-white">Hub</span>
+               </h3> 
             </div>
-            {/* Sidebar bottom links */}
-            <div>
-               <div className="p-4">                                             
-                  <NavLink   className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                     flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`} end>   
-                     <FaCog/> <span>Settings </span>
-                  </NavLink>
-                  <NavLink className={({isActive})=>`${isActive ? "bg-gray-800":" "}
-                     flex items-center space-x-4 px-4 rounded border border-black hover:border-gray-300`}>
-                     <FaQuestion/> <span>Help</span>
-                  </NavLink>
-               </div>
+
+            {/* Main Navigation Links */}
+            <div className="p-4 space-y-2">                                             
+               <NavLink to="/batchrep-dashboard" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
+                  <FaTachometerAlt/> <span>Dashboard</span>
+               </NavLink>
+               
+               <NavLink to={"/batchrep-dashboard/list-batch"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>
+                  <FaBuilding/> <span>Batch</span>
+               </NavLink>
+
+               <NavLink to={"/batchrep-dashboard/list-event"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}> 
+                  <FaCalendarAlt/> <span>Events</span>
+               </NavLink>
+
+               <NavLink to={"/batchrep-dashboard/users"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>
+                  <FaUsers/> <span>Users</span>
+               </NavLink>
+            </div>
+         </div>
+
+         {/* Bottom Links */}
+         <div className="border-t border-gray-700">
+            <div className="p-4 space-y-2">                                             
+               <NavLink to={"/batchrep-dashboard/settings"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                  flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
+                  <FaCog/> <span>Settings</span>
+               </NavLink>
             </div>
          </div>
       </div>
