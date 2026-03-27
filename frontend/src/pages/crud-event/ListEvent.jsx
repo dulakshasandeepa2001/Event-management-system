@@ -97,7 +97,7 @@ const ListEvent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f1419] p-0 text-white overflow-y-auto">
+    <div className="min-h-screen bg-[#0f1419] p-8 text-white overflow-y-auto">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-5xl font-bold mb-2">Manage Events</h1>

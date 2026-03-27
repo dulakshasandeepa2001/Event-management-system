@@ -19,6 +19,7 @@ const seedUsers = async () => {
             u_password: await bcrypt.hash("brep1", 10),
             u_role: "batchrep",
             isBatchRep: true,
+            u_batchId: "69c42b2978b1a37cbbd3392e"
         },        
         
 

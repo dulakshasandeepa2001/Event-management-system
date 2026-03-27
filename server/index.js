@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js'
 import studentRoutes from './routes/studentRoutes.js';
 import batchRoutes from './routes/batchRoutes.js';
 import eventRoutes from "./routes/eventRoutes.js";
+import marksRoutes from "./routes/marksRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -30,6 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/batch", batchRoutes);
 app.use("/api/event", eventRoutes);
+app.use("/api/marks", marksRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(

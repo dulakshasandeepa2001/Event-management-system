@@ -25,6 +25,13 @@ import ListEvent from './pages/crud-event/ListEvent.jsx';
 import ListEventStu from "./pages/crud-event/ListEventStu.jsx";
 import ViewEventStu from "./pages/crud-event/ViewEventStu.jsx";
 
+import AddMarks from './pages/crud-marks/AddMarks.jsx';
+import EditMarks from './pages/crud-marks/EditMarks.jsx';
+import ListMarks from './pages/crud-marks/ListMarks.jsx';
+import ListMarksStu from './pages/crud-marks/ListMarksStu.jsx';
+import ViewMarksStu from './pages/crud-marks/ViewMarksStu.jsx';
+
+
 function App() {
   return (
     <>
@@ -56,6 +63,10 @@ function App() {
               <Route path="/batchrep-dashboard/add-event" element={<AddEvent />} />
               <Route path="/batchrep-dashboard/edit-event/:id" element={<EditEvent />} />
               <Route path="/batchrep-dashboard/list-event" element={<ListEvent />} />
+
+              <Route path="/batchrep-dashboard/add-marks" element={<AddMarks />} />
+              <Route path="/batchrep-dashboard/edit-marks/:id" element={<EditMarks />} />
+              <Route path="/batchrep-dashboard/list-marks" element={<ListMarks />} />
             </Route>
 
 
@@ -68,6 +79,9 @@ function App() {
               <Route index element={<StudentSummary />} />
               <Route path="/student-dashboard/list-event" element={<ListEventStu />} />
               <Route path="/student-dashboard/view-event/:id" element={<ViewEventStu />} />
+
+              <Route path="/student-dashboard/list-marks" element={<ListMarksStu />} />
+              <Route path="/student-dashboard/view-marks/:id" element={<ViewMarksStu />} />
             </Route>      
         </Routes>
 

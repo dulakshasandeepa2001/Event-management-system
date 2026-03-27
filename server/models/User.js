@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     u_activationCode : { type: String, default: null }
 
 }, { timestamps: true }); 
-
+ 
 
 const User = mongoose.model("User", userSchema);
 export default User

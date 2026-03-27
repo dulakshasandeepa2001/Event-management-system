@@ -34,9 +34,9 @@ const BatchrepSidebar = () => {
                   <FaCalendarAlt/> <span>Events</span>
                </NavLink>
 
-               <NavLink to={"/batchrep-dashboard/users"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+               <NavLink to={"/batchrep-dashboard/list-marks"} className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
                      flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>
-                  <FaUsers/> <span>Users</span>
+                  <FaUsers/> <span>Marks</span>
                </NavLink>
             </div>
          </div>
