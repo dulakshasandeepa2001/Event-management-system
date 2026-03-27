@@ -13,13 +13,21 @@ import AdminSummary from './pages/admin/AdminSummary.jsx';
 
 import StudentDashboard from './pages/student/StudentDashboard.jsx';
 import StudentSummary from './pages/student/StudentSummary.jsx';
+import StudentSubmissions from './pages/student/StudentSubmissions.jsx';
+import StudentExamResults from './pages/student/StudentExamResults.jsx';
+import StudentMentalHealth from './pages/student/StudentMentalHealth.jsx';
 
 import BatchrepDashboard from './pages/batchrep/BatchrepDashboard.jsx';
 import BatchrepSummary from './pages/batchrep/BatchrepSummary.jsx';
+import BatchrepSubmissions from './pages/batchrep/BatchrepSubmissions.jsx';
+import BatchrepEvents from './pages/batchrep/BatchrepEvents.jsx';
+import BatchrepStudents from './pages/batchrep/BatchrepStudents.jsx';
+import BatchrepNotices from './pages/batchrep/BatchrepNotices.jsx';
 
 import AddBatch from './pages/crud-batch/AddBatch.jsx';
 import ViewBatch from './pages/crud-batch/ViewBatch.jsx';
 import ListBatch from './pages/crud-batch/ListBatch.jsx';
+import AIChatWidget from './components/AIChatWidget.jsx';
 
 function App() {
   return (
@@ -48,6 +56,10 @@ function App() {
           </ProtectedRoute>
         }>
           <Route index element={<BatchrepSummary />} />
+          <Route path="events" element={<BatchrepEvents />} />
+          <Route path="students" element={<BatchrepStudents />} />
+          <Route path="submissions" element={<BatchrepSubmissions />} />
+          <Route path="notices" element={<BatchrepNotices />} />
         </Route>
 
         <Route path="/student-dashboard" element={
@@ -56,6 +68,9 @@ function App() {
           </ProtectedRoute>
         }>
           <Route index element={<StudentSummary />} />
+          <Route path="submissions" element={<StudentSubmissions />} />
+          <Route path="exam-results" element={<StudentExamResults />} />
+          <Route path="mental-health" element={<StudentMentalHealth />} />
         </Route>      
       </Routes>
 
@@ -64,6 +79,8 @@ function App() {
         hideProgressBar={false} closeOnClick  pauseOnHover draggable
         toastStyle={ {width:'auto', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'allipsis'} }
       />
+
+      <AIChatWidget />
     </>
   );
 }
