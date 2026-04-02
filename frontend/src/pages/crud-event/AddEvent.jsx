@@ -14,13 +14,17 @@ const AddEvent = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Academic");
   const [eventDate, setEventDate] = useState("");
-  const [startTime, setStartTime] = useState("");
+  const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
   const [batchId, setBatchId] = useState("");
   const [targetGroups, setTargetGroups] = useState(["All"]);
   const [status, setStatus] = useState("Upcoming");
   const [saving, setSaving] = useState(false);
+
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
 
   const currentUser = useMemo(() => {
     try {
@@ -174,6 +178,7 @@ const AddEvent = () => {
               type="date"
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
+              min={getTodayDate()}
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -200,7 +205,16 @@ const AddEvent = () => {
             <input
               type="time"
               value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              onChange={(e) => {
+                const time = e.target.value;
+                if (time && (time < "08:00" || time > "20:00")) {
+                  toast.error("Start time must be between 8:00 AM and 8:00 PM");
+                  return;
+                }
+                setStartTime(time);
+              }}
+              min="08:00"
+              max="20:00"
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -210,7 +224,16 @@ const AddEvent = () => {
             <input
               type="time"
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={(e) => {
+                const time = e.target.value;
+                if (time && time > "20:00") {
+                  toast.error("End time cannot be after 8:00 PM");
+                  return;
+                }
+                setEndTime(time);
+              }}
+              min="08:00"
+              max="20:00"
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>

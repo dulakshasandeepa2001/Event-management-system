@@ -40,6 +40,10 @@ const EditEvent = () => {
 
   const groupOptions = ["All", "Group 1", "Group 2", "Group 3", "Group 4", "Group 5"];
 
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
   const fetchEvent = async () => {
     try {
       setLoading(true);
@@ -200,6 +204,7 @@ const EditEvent = () => {
               type="date"
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
+              min={getTodayDate()}
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -226,7 +231,16 @@ const EditEvent = () => {
             <input
               type="time"
               value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              onChange={(e) => {
+                const time = e.target.value;
+                if (time && (time < "08:00" || time > "20:00")) {
+                  toast.error("Start time must be between 8:00 AM and 8:00 PM");
+                  return;
+                }
+                setStartTime(time);
+              }}
+              min="08:00"
+              max="20:00"
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -236,7 +250,16 @@ const EditEvent = () => {
             <input
               type="time"
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={(e) => {
+                const time = e.target.value;
+                if (time && time > "20:00") {
+                  toast.error("End time cannot be after 8:00 PM");
+                  return;
+                }
+                setEndTime(time);
+              }}
+              min="08:00"
+              max="20:00"
               className="w-full bg-[#0f1419] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
