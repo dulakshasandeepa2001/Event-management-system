@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaUser, FaPowerOff, FaBell } from "react-icons/fa";
+import { FaUserCircle, FaBell, FaSearch, FaCommentAlt } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import ConfirmModal from "../components/ConfirmModal";
 
 const BatchrepNavbar = () => {
 
-  const { user, logout, loading } = useAuth();
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,29 +15,36 @@ const BatchrepNavbar = () => {
   if (loading) return null; // or spinner
 
     return (
-        <div className='flex justify-between items-center bg-[#1a1f2e] border-b border-gray-700 h-16 px-6 my_font_family'>
-            <div className='flex items-center text-white space-x-3'>
-                <div className='bg-blue-500/20 p-2 rounded-lg'>
-                    <FaUser className='text-blue-500 text-lg'/>
+        <header className='sticky top-0 z-20 border-b border-cyan-400/10 bg-[#050b18]/90 px-4 py-3 backdrop-blur md:px-6 lg:px-8'>
+            <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+                <div className='flex items-center gap-3'>
+                    <FaUserCircle className='text-3xl text-cyan-300' />
+                    <div>
+                        <h3 className="text-sm font-semibold text-slate-100 md:text-base">Welcome, {user?.u_name}</h3>
+                        <p className='text-xs text-slate-400'>Manage events, notices, and batch engagement in one place.</p>
+                    </div>
                 </div>
-                <h3 className="text-white font-semibold">Welcome, {user?.u_name}</h3>
-            </div>
-            <div className='flex items-center space-x-3'>
-                <button className="relative p-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border border-yellow-500/50 rounded-lg transition">
-                    <FaBell/>
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <div id='bt_section' className='relative'>
-                    <button className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 border border-red-500/50 rounded-lg transition" onClick={() => setConfirmOpen(true)}> 
-                        <FaPowerOff className='text-lg'/> 
+
+                <div className='flex items-center gap-2 md:gap-3'>
+                    <label className='flex min-w-[180px] flex-1 items-center gap-2 rounded-full border border-cyan-300/15 bg-[#0e1630] px-3 py-2 md:min-w-[320px]'>
+                        <FaSearch className='text-slate-400' />
+                        <input
+                            type='text'
+                            placeholder='Search here'
+                            className='w-full bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none'
+                        />
+                    </label>
+
+                    <button className='grid h-9 w-9 place-items-center rounded-full border border-cyan-300/15 bg-[#0d1530] text-slate-300 hover:text-cyan-200'>
+                        <FaCommentAlt />
                     </button>
-                    <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-2 py-1 border border-gray-600 bg-[#1a1f2e] text-white rounded z-50 right-0 mt-1"><p>Logout</p></div>
+                    <button className='relative grid h-9 w-9 place-items-center rounded-full border border-cyan-300/15 bg-[#0d1530] text-slate-300 hover:text-cyan-200'>
+                        <FaBell />
+                        <span className='absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-400' />
+                    </button>
                 </div>
             </div>
-            {/* ConfirmModal */}
-            <ConfirmModal show={confirmOpen} message="Are you sure you want to logout?"
-                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>            
-        </div>
+        </header>
     )
 }
 

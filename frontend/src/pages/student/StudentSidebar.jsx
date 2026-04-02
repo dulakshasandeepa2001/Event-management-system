@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaCalendarAlt, FaTachometerAlt, FaCog, FaQuestionCircle } from 'react-icons/fa'
+import { FaFileUpload, FaTachometerAlt, FaCog, FaGraduationCap, FaHeart } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom'  
 
 const StudentSidebar = () => {
@@ -29,7 +29,17 @@ const StudentSidebar = () => {
 
                <NavLink to="/student-dashboard/list-marks" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
                   flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
-                  <FaTachometerAlt/> <span>Marks</span>
+                  <FaGraduationCap/> <span>Exam Results</span>
+               </NavLink>
+
+               <NavLink to="/student-dashboard/submissions" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>   
+                  <FaFileUpload/> <span>Submissions</span>
+               </NavLink>
+
+               <NavLink to="/student-dashboard/mental-health" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>   
+                  <FaHeart/> <span>Mental Health</span>
                </NavLink>
             </div>
          </div>
@@ -37,10 +47,12 @@ const StudentSidebar = () => {
          {/* Bottom Links */}
          <div className="border-t border-gray-700">
             <div className="p-4 space-y-2">                                             
-               <NavLink className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
-                  flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
+               <button
+                  type="button"
+                  className="w-full border-gray-700 flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition"
+               >
                   <FaCog/> <span>Settings</span>
-               </NavLink>
+               </button>
             </div>
          </div>
       </div>

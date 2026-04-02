@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
+import welcomeIllustration from "../../assets/qwe1234.jpg";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -18,6 +19,10 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const regNoRegex = /^[A-Za-z0-9\-_/]{3,20}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -25,14 +30,57 @@ const Register = () => {
     setError("");
     setSuccess("");
 
+    const normalizedName = name.trim();
+    const normalizedStudentId = studentId.trim().toUpperCase();
+    const normalizedEmail = studentEmail.trim().toLowerCase();
+    const normalizedFaculty = faculty.trim();
+    const normalizedCourse = course.trim();
+    const normalizedYear = year ? Number(year) : null;
+    const normalizedSemester = semester ? Number(semester) : null;
+
     // Validation
-    if (!studentId.trim()) {
+    if (!normalizedName || normalizedName.length < 3) {
+      setError("Full Name must be at least 3 characters");
+      return;
+    }
+
+    if (!normalizedStudentId) {
       setError("Student ID is required");
       return;
     }
+
+    if (!regNoRegex.test(normalizedStudentId)) {
+      setError("Student ID must be 3-20 chars and contain only letters, numbers, -, _, /");
+      return;
+    }
     
-    if (!studentEmail.trim()) {
+    if (!normalizedEmail) {
       setError("Student Email is required");
+      return;
+    }
+
+    if (!emailRegex.test(normalizedEmail)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!normalizedFaculty) {
+      setError("Faculty is required");
+      return;
+    }
+
+    if (!normalizedCourse || normalizedCourse.length < 2) {
+      setError("Course is required");
+      return;
+    }
+
+    if (!normalizedYear || normalizedYear < 1 || normalizedYear > 4) {
+      setError("Please select a valid year (1-4)");
+      return;
+    }
+
+    if (!normalizedSemester || normalizedSemester < 1 || normalizedSemester > 8) {
+      setError("Please select a valid semester (1-8)");
       return;
     }
 
@@ -41,22 +89,22 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!passwordRegex.test(password)) {
+      setError("Password must be at least 8 characters with letters and numbers");
       return;
     }
 
     try {
       const response = await API.post("/auth/register", {
-        u_name: name,
-        u_email: studentEmail,
+        u_name: normalizedName,
+        u_email: normalizedEmail,
         u_password: password,
         u_role: "student",
-        u_regno: studentId,  
-        u_faculty: faculty || null,
-        u_course: course || null,
-        u_year: year || null,
-        u_semester: semester || null
+        u_regno: normalizedStudentId,
+        u_faculty: normalizedFaculty,
+        u_course: normalizedCourse,
+        u_year: normalizedYear,
+        u_semester: normalizedSemester
       });
 
       setSuccess("✅ Account created successfully! Redirecting to login...");
@@ -117,8 +165,10 @@ const Register = () => {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                 placeholder="Enter your full name"
+                  minLength={3}
+                  maxLength={80}
                 required
               />
             </div>
@@ -135,8 +185,11 @@ const Register = () => {
                   id="studentId"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                   placeholder="e.g., CS001"
+                  pattern="[A-Za-z0-9\\-_/]{3,20}"
+                  minLength={3}
+                  maxLength={20}
                   required
                 />
               </div>
@@ -151,7 +204,7 @@ const Register = () => {
                   id="studentEmail"
                   value={studentEmail}
                   onChange={(e) => setStudentEmail(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                   placeholder="e.g., student@example.com"
                   required
                 />
@@ -169,7 +222,8 @@ const Register = () => {
                   id="faculty"
                   value={faculty}
                   onChange={(e) => setFaculty(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
                 >
                   <option value="">Select Faculty</option>
                   <option value="Engineering">Engineering</option>
@@ -191,8 +245,11 @@ const Register = () => {
                   id="course"
                   value={course}
                   onChange={(e) => setCourse(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                   placeholder="e.g., Software Engineering"
+                  minLength={2}
+                  maxLength={80}
+                  required
                 />
               </div>
             </div>
@@ -208,7 +265,8 @@ const Register = () => {
                   id="year"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
                 >
                   <option value="">Select Year</option>
                   <option value="1">Year 1</option>
@@ -227,7 +285,8 @@ const Register = () => {
                   id="semester"
                   value={semester}
                   onChange={(e) => setSemester(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
                 >
                   <option value="">Select Semester</option>
                   <option value="1">Semester 1</option>
@@ -255,8 +314,9 @@ const Register = () => {
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition pr-12"
+                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
                     placeholder="Create a password"
+                    minLength={8}
                     required
                   />
                   <button
@@ -280,7 +340,7 @@ const Register = () => {
                     id="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition pr-12"
+                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
                     placeholder="Confirm your password"
                     required
                   />
@@ -298,7 +358,7 @@ const Register = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
             >
               Create Account
             </button>
@@ -309,7 +369,7 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="text-white hover:text-purple-500 transition font-medium"
+                className="text-white hover:text-cyan-500 transition font-medium"
               >
                 Login
               </button>
@@ -319,55 +379,25 @@ const Register = () => {
       </div>
 
       {/* Right Side - Welcome Section */}
-      <div className="bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-purple-600/30 backdrop-blur-3xl"></div>
+      <div className="bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/30 backdrop-blur-3xl"></div>
         
         <div className="relative z-10 text-center text-white space-y-6 max-w-lg">
           <div className="space-y-4">
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               Join our<br />student portal
             </h2>
-            <p className="text-purple-100 text-lg">
+            <p className="text-cyan-100 text-lg">
               Create an account to get started
             </p>
           </div>
 
-          {/* Illustration Placeholder */}
           <div className="mt-12 flex justify-center">
-            <div className="w-full max-w-md">
-              <svg viewBox="0 0 400 300" className="w-full h-auto">
-                {/* Simple illustration of students working */}
-                <g>
-                  {/* Background elements */}
-                  <circle cx="320" cy="80" r="60" fill="rgba(255,255,255,0.1)" />
-                  <circle cx="80" cy="240" r="40" fill="rgba(255,255,255,0.1)" />
-                  
-                  {/* Students illustration */}
-                  <g transform="translate(100, 120)">
-                    {/* Person 1 */}
-                    <ellipse cx="40" cy="100" rx="30" ry="8" fill="rgba(0,0,0,0.1)" />
-                    <rect x="25" y="60" width="30" height="40" rx="15" fill="white" />
-                    <circle cx="40" cy="40" r="18" fill="white" />
-                    <path d="M 30 75 L 20 95" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <path d="M 50 75 L 60 95" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                  </g>
-                  
-                  <g transform="translate(180, 80)">
-                    {/* Person 2 with laptop */}
-                    <ellipse cx="50" cy="120" rx="35" ry="8" fill="rgba(0,0,0,0.1)" />
-                    <rect x="35" y="70" width="30" height="50" rx="15" fill="white" />
-                    <circle cx="50" cy="50" r="20" fill="white" />
-                    <path d="M 40 95 L 30 115" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <path d="M 60 95 L 70 115" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <rect x="60" y="85" width="40" height="25" rx="2" fill="rgba(255,255,255,0.9)" />
-                  </g>
-                  
-                  {/* Decorative leaves */}
-                  <path d="M 350 260 Q 360 250 370 260 Q 360 270 350 260" fill="white" fillOpacity="0.7" />
-                  <path d="M 340 270 Q 345 265 350 270 Q 345 275 340 270" fill="white" fillOpacity="0.7" />
-                </g>
-              </svg>
-            </div>
+            <img
+              src={welcomeIllustration}
+              alt="Student portal illustration"
+              className="w-full max-w-md rounded-2xl object-cover shadow-2xl shadow-blue-900/30"
+            />
           </div>
         </div>
 

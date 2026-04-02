@@ -14,6 +14,9 @@ import StudentSummary from './pages/student/StudentSummary.jsx';
 
 import BatchrepDashboard from './pages/batchrep/BatchrepDashboard.jsx';
 import BatchrepSummary from './pages/batchrep/BatchrepSummary.jsx';
+import BatchrepSubmissions from './pages/batchrep/BatchrepSubmissions.jsx';
+import BatchrepStudents from './pages/batchrep/BatchrepStudents.jsx';
+import BatchrepNotices from './pages/batchrep/BatchrepNotices.jsx';
 
 import AddBatch from './pages/crud-batch/AddBatch.jsx';
 import ViewBatch from './pages/crud-batch/ViewBatch.jsx';
@@ -30,6 +33,8 @@ import EditMarks from './pages/crud-marks/EditMarks.jsx';
 import ListMarks from './pages/crud-marks/ListMarks.jsx';
 import ListMarksStu from './pages/crud-marks/ListMarksStu.jsx';
 import ViewMarksStu from './pages/crud-marks/ViewMarksStu.jsx';
+
+import AIChatWidget from './components/AIChatWidget.jsx';
 
 
 function App() {
@@ -92,6 +97,8 @@ function App() {
           hideProgressBar={false} closeOnClick  pauseOnHover draggable
           toastStyle={ {width:'auto', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'allipsis'} }
         />
+
+        <AIChatWidget />
     </>
   );
 }

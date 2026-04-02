@@ -2,9 +2,11 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { FaCheckCircle, FaCalendarAlt, FaUsers, FaClock, FaTrophy, FaArrowUp, FaArrowDown } from 'react-icons/fa'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts'
 import { useAuth } from '../../context/AuthContext'
+import API from '../../api'
 
 const StudentSummary = () => {
     const { user } = useAuth();
+    const [submissions, setSubmissions] = useState([]);
 
     // Mock data for charts
     const participationData = [
@@ -23,12 +25,42 @@ const StudentSummary = () => {
         { name: 'Academic', value: 2, percentage: '16%' }
     ];
 
-    const upcomingEvents = [
-        { id: 1, name: 'Tech Conference 2024', date: '2024-04-15', category: 'Tech', status: 'Registered', change: '+3.8%' },
-        { id: 2, name: 'Coding Workshop', date: '2024-04-20', category: 'Tech', status: 'Registered', change: '+2.1%' },
-        { id: 3, name: 'Career Fair', date: '2024-05-10', category: 'Career', status: 'Interested', change: '-1.2%' },
-        { id: 4, name: 'Sports Tournament', date: '2024-05-15', category: 'Sports', status: 'Registered', change: '+5.4%' }
-    ];
+    useEffect(() => {
+        const fetchSubmissions = async () => {
+            if (!user || user.u_role !== 'student') return;
+
+            try {
+                const res = await API.get('/submissions/student/my');
+                setSubmissions(res.data?.submissions || []);
+            } catch (err) {
+                setSubmissions([]);
+            }
+        };
+
+        fetchSubmissions();
+    }, [user]);
+
+    const formatDate = (value) => new Date(value).toLocaleDateString('en-GB');
+
+    const getCountdown = (value) => {
+        const due = new Date(value).getTime();
+        const now = Date.now();
+        const diff = due - now;
+
+        if (diff <= 0) {
+            const overdueDays = Math.max(1, Math.ceil(Math.abs(diff) / (1000 * 60 * 60 * 24)));
+            return { label: `${overdueDays} day${overdueDays === 1 ? '' : 's'} overdue`, overdue: true };
+        }
+
+        const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
+        if (daysLeft > 0) return { label: `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`, overdue: false };
+
+        const hoursLeft = Math.max(1, Math.floor(diff / (1000 * 60 * 60)));
+        return { label: `${hoursLeft} hour${hoursLeft === 1 ? '' : 's'} left`, overdue: false };
+    };
+
+    const activeSubmissions = useMemo(() => submissions.filter((item) => new Date(item.s_dueDate).getTime() >= Date.now()), [submissions]);
+    const overdueSubmissions = useMemo(() => submissions.filter((item) => new Date(item.s_dueDate).getTime() < Date.now()), [submissions]);
 
     return (
         <div className='p-8 space-y-8'>
@@ -46,11 +78,11 @@ const StudentSummary = () => {
                 <div className='lg:col-span-2 bg-[#1a1f2e] border border-gray-700 rounded-lg p-8'>
                     <div className='flex justify-between items-start mb-8'>
                         <div>
-                            <p className='text-gray-400 text-sm mb-2'>Total Events Registered</p>
-                            <h2 className='text-5xl font-bold text-white'>12</h2>
+                            <p className='text-gray-400 text-sm mb-2'>Total Submissions Assigned</p>
+                            <h2 className='text-5xl font-bold text-white'>{submissions.length}</h2>
                             <div className='flex items-center space-x-2 mt-4'>
                                 <div className='flex items-center text-green-400 text-sm'>
-                                    <FaArrowUp className='mr-1' /> +3 this month
+                                    <FaArrowUp className='mr-1' /> {activeSubmissions.length} active now
                                 </div>
                             </div>
                         </div>
@@ -61,9 +93,9 @@ const StudentSummary = () => {
                         </div>
                     </div>
                     {/* Mini chart */}
-                    <ResponsiveContainer width="100%" height={60}>
+                    <ResponsiveContainer width='100%' height={60}>
                         <LineChart data={participationData.slice(-3)}>
-                            <Line type="monotone" dataKey="registered" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                            <Line type='monotone' dataKey='registered' stroke='#3b82f6' strokeWidth={2} dot={false} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -71,14 +103,14 @@ const StudentSummary = () => {
                 {/* Quick Stats */}
                 <div className='space-y-3'>
                     <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-                        <p className='text-gray-400 text-xs mb-2'>COMPLETED EVENTS</p>
-                        <h3 className='text-3xl font-bold text-white'>8</h3>
-                        <p className='text-green-400 text-xs mt-2'>Attended all</p>
+                        <p className='text-gray-400 text-xs mb-2'>UPCOMING SUBMISSIONS</p>
+                        <h3 className='text-3xl font-bold text-white'>{activeSubmissions.length}</h3>
+                        <p className='text-green-400 text-xs mt-2'>Need your action</p>
                     </div>
                     <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-                        <p className='text-gray-400 text-xs mb-2'>CURRENT STREAK</p>
-                        <h3 className='text-3xl font-bold text-white'>4</h3>
-                        <p className='text-orange-400 text-xs mt-2'>Consecutive events</p>
+                        <p className='text-gray-400 text-xs mb-2'>OVERDUE SUBMISSIONS</p>
+                        <h3 className='text-3xl font-bold text-white'>{overdueSubmissions.length}</h3>
+                        <p className='text-orange-400 text-xs mt-2'>Please submit soon</p>
                     </div>
                 </div>
             </div>
@@ -95,17 +127,17 @@ const StudentSummary = () => {
                         <button className='px-4 py-2 text-gray-400 text-xs rounded-full border border-gray-700'>1Y</button>
                     </div>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width='100%' height={300}>
                     <LineChart data={participationData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="month" stroke="#888" />
-                        <YAxis stroke="#888" />
+                        <CartesianGrid strokeDasharray='3 3' stroke='#333' />
+                        <XAxis dataKey='month' stroke='#888' />
+                        <YAxis stroke='#888' />
                         <Tooltip 
                             contentStyle={{ backgroundColor: '#0f1419', border: '1px solid #333', borderRadius: '8px' }}
                             labelStyle={{ color: '#fff' }}
                         />
-                        <Line type="monotone" dataKey="events" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} name="Total Events" />
-                        <Line type="monotone" dataKey="registered" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} name="Registered" />
+                        <Line type='monotone' dataKey='events' stroke='#3b82f6' strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} name='Total Events' />
+                        <Line type='monotone' dataKey='registered' stroke='#10b981' strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} name='Registered' />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
@@ -146,9 +178,9 @@ const StudentSummary = () => {
                     <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
                         <div className='flex justify-between items-start'>
                             <div>
-                                <p className='text-gray-400 text-xs mb-1'>UPCOMING EVENTS</p>
-                                <h4 className='text-2xl font-bold text-white'>4</h4>
-                                <p className='text-orange-400 text-xs mt-2'>Within 30 days</p>
+                                <p className='text-gray-400 text-xs mb-1'>UPCOMING SUBMISSIONS</p>
+                                <h4 className='text-2xl font-bold text-white'>{activeSubmissions.length}</h4>
+                                <p className='text-orange-400 text-xs mt-2'>Based on your module deadlines</p>
                             </div>
                             <FaClock className='text-orange-500 text-xl' />
                         </div>
@@ -158,40 +190,38 @@ const StudentSummary = () => {
 
             {/* Events Overview Table */}
             <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-                <h3 className='text-white font-semibold text-lg mb-6'>Event Overview</h3>
+                <h3 className='text-white font-semibold text-lg mb-6'>Submission Overview</h3>
                 <div className='overflow-x-auto'>
                     <table className='w-full'>
                         <thead>
                             <tr className='border-b border-gray-700'>
-                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>EVENT NAME</th>
-                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>DATE</th>
-                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>CATEGORY</th>
-                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>STATUS</th>
-                                <th className='text-right py-3 px-4 text-gray-400 font-medium text-xs'>CHANGE</th>
+                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>TITLE</th>
+                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>MODULE</th>
+                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>DUE DATE</th>
+                                <th className='text-left py-3 px-4 text-gray-400 font-medium text-xs'>YEAR/SEM</th>
+                                <th className='text-right py-3 px-4 text-gray-400 font-medium text-xs'>TIME LEFT</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {upcomingEvents.map((event) => (
-                                <tr key={event.id} className='border-b border-gray-700/50 hover:bg-[#252d3d]/50 transition'>
-                                    <td className='py-4 px-4 text-white font-medium'>{event.name}</td>
-                                    <td className='py-4 px-4 text-gray-400 text-sm'>{event.date}</td>
-                                    <td className='py-4 px-4'>
-                                        <span className='text-gray-300 text-sm'>{event.category}</span>
-                                    </td>
-                                    <td className='py-4 px-4'>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            event.status === 'Registered' 
-                                                ? 'bg-green-500/20 text-green-400' 
-                                                : 'bg-blue-500/20 text-blue-400'
-                                        }`}>
-                                            {event.status}
-                                        </span>
-                                    </td>
-                                    <td className={`py-4 px-4 text-right font-semibold ${event.change.includes('+') ? 'text-green-400' : 'text-red-400'}`}>
-                                        {event.change}
-                                    </td>
+                            {submissions.length === 0 && (
+                                <tr>
+                                    <td colSpan='5' className='py-4 px-4 text-center text-sm text-gray-400'>No submission notifications right now.</td>
                                 </tr>
-                            ))}
+                            )}
+                            {submissions.map((submission) => {
+                                const countdown = getCountdown(submission.s_dueDate);
+                                return (
+                                    <tr key={submission._id} className='border-b border-gray-700/50 hover:bg-[#252d3d]/50 transition'>
+                                        <td className='py-4 px-4 text-white font-medium'>{submission.s_title}</td>
+                                        <td className='py-4 px-4 text-gray-300 text-sm'>{submission.s_module}</td>
+                                        <td className='py-4 px-4 text-gray-400 text-sm'>{formatDate(submission.s_dueDate)}</td>
+                                        <td className='py-4 px-4 text-gray-300 text-sm'>{submission.s_year} / {submission.s_semester}</td>
+                                        <td className={`py-4 px-4 text-right font-semibold ${countdown.overdue ? 'text-red-400' : 'text-green-400'}`}>
+                                            {countdown.label}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

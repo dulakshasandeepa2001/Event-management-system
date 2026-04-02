@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
+import welcomeIllustration from "../../assets/qwe1234.jpg";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -85,7 +86,7 @@ const Signup = () => {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                 placeholder="Enter your full name"
                 required
               />
@@ -101,7 +102,7 @@ const Signup = () => {
                 id="studentId"
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
                 placeholder="Enter your student ID"
                 required
               />
@@ -118,7 +119,7 @@ const Signup = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition pr-12"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
                   placeholder="Create a password"
                   required
                 />
@@ -143,7 +144,7 @@ const Signup = () => {
                   id="confirmPassword"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition pr-12"
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
                   placeholder="Confirm your password"
                   required
                 />
@@ -160,7 +161,7 @@ const Signup = () => {
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
             >
               Create Account
             </button>
@@ -171,7 +172,7 @@ const Signup = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="text-white hover:text-purple-500 transition font-medium"
+                className="text-white hover:text-cyan-500 transition font-medium"
               >
                 Login
               </button>
@@ -181,55 +182,25 @@ const Signup = () => {
       </div>
 
       {/* Right Side - Welcome Section */}
-      <div className="bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-purple-600/30 backdrop-blur-3xl"></div>
+      <div className="bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/30 backdrop-blur-3xl"></div>
         
         <div className="relative z-10 text-center text-white space-y-6 max-w-lg">
           <div className="space-y-4">
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               Join our<br />student portal
             </h2>
-            <p className="text-purple-100 text-lg">
+            <p className="text-cyan-100 text-lg">
               Create an account to get started
             </p>
           </div>
 
-          {/* Illustration Placeholder */}
           <div className="mt-12 flex justify-center">
-            <div className="w-full max-w-md">
-              <svg viewBox="0 0 400 300" className="w-full h-auto">
-                {/* Simple illustration of students working */}
-                <g>
-                  {/* Background elements */}
-                  <circle cx="320" cy="80" r="60" fill="rgba(255,255,255,0.1)" />
-                  <circle cx="80" cy="240" r="40" fill="rgba(255,255,255,0.1)" />
-                  
-                  {/* Students illustration */}
-                  <g transform="translate(100, 120)">
-                    {/* Person 1 */}
-                    <ellipse cx="40" cy="100" rx="30" ry="8" fill="rgba(0,0,0,0.1)" />
-                    <rect x="25" y="60" width="30" height="40" rx="15" fill="white" />
-                    <circle cx="40" cy="40" r="18" fill="white" />
-                    <path d="M 30 75 L 20 95" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <path d="M 50 75 L 60 95" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                  </g>
-                  
-                  <g transform="translate(180, 80)">
-                    {/* Person 2 with laptop */}
-                    <ellipse cx="50" cy="120" rx="35" ry="8" fill="rgba(0,0,0,0.1)" />
-                    <rect x="35" y="70" width="30" height="50" rx="15" fill="white" />
-                    <circle cx="50" cy="50" r="20" fill="white" />
-                    <path d="M 40 95 L 30 115" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <path d="M 60 95 L 70 115" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    <rect x="60" y="85" width="40" height="25" rx="2" fill="rgba(255,255,255,0.9)" />
-                  </g>
-                  
-                  {/* Decorative leaves */}
-                  <path d="M 350 260 Q 360 250 370 260 Q 360 270 350 260" fill="white" fillOpacity="0.7" />
-                  <path d="M 340 270 Q 345 265 350 270 Q 345 275 340 270" fill="white" fillOpacity="0.7" />
-                </g>
-              </svg>
-            </div>
+            <img
+              src={welcomeIllustration}
+              alt="Student portal illustration"
+              className="w-full max-w-md rounded-2xl object-cover shadow-2xl shadow-blue-900/30"
+            />
           </div>
         </div>
 
