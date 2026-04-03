@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaSync } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { toast } from "react-toastify";
 import API from "../../api";
 import ConfirmModal from "../components/ConfirmModal";
@@ -250,6 +250,14 @@ const ListEvent = () => {
 
                   <td className="py-4 px-4">
                     <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => navigate(`/batchrep-dashboard/view-event/${event._id}`)}
+                        className="p-2 hover:bg-green-500/20 rounded-lg transition text-green-400"
+                        title="View"
+                      >
+                        <FaEye />
+                      </button>
+
                       <button
                         onClick={() => navigate(`/batchrep-dashboard/edit-event/${event._id}`)}
                         className="p-2 hover:bg-blue-500/20 rounded-lg transition text-blue-400"

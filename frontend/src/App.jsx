@@ -25,8 +25,10 @@ import ListBatch from './pages/crud-batch/ListBatch.jsx';
 import AddEvent from './pages/crud-event/AddEvent.jsx';
 import EditEvent from './pages/crud-event/EditEvent.jsx';
 import ListEvent from './pages/crud-event/ListEvent.jsx';
+import ViewEvent from './pages/crud-event/ViewEvent.jsx';
 import ListEventStu from "./pages/crud-event/ListEventStu.jsx";
 import ViewEventStu from "./pages/crud-event/ViewEventStu.jsx";
+import ViewComments from "./pages/crud-event/ViewComments";
 
 import AddMarks from './pages/crud-marks/AddMarks.jsx';
 import EditMarks from './pages/crud-marks/EditMarks.jsx';
@@ -68,6 +70,9 @@ function App() {
               <Route path="/batchrep-dashboard/add-event" element={<AddEvent />} />
               <Route path="/batchrep-dashboard/edit-event/:id" element={<EditEvent />} />
               <Route path="/batchrep-dashboard/list-event" element={<ListEvent />} />
+              <Route path="/batchrep-dashboard/view-event/:id" element={<ViewEvent />} />
+              <Route path="/batchrep-dashboard/event/:id/comments" element={<ViewComments />}
+/>
 
               <Route path="/batchrep-dashboard/add-marks" element={<AddMarks />} />
               <Route path="/batchrep-dashboard/edit-marks/:id" element={<EditMarks />} />
