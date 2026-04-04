@@ -1,13 +1,7 @@
 import User from "../models/User.js";
-<<<<<<< HEAD
-//import SemesterRecord from "../models/SemesterRecord.js"; // optional if you added it
-
-// GET /api/student  -> list all students (admin or batch rep)
-=======
 import Batch from "../models/Batch.js";
 
 // GET /api/students -> list all students (admin or batch rep) with optional filtering
->>>>>>> ra_new_part
 export const getAllStudents = async (req, res) => {
   try {
     // permission: allow if admin role OR batch rep flag
@@ -15,11 +9,6 @@ export const getAllStudents = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" });
     } 
 
-<<<<<<< HEAD
-    // If you want only active students for current semester:
-    const students = await User.find({ u_role: "student" }).select("-u_password").lean();
-    return res.status(200).json({ students });
-=======
     // Extract query filters
     const { batchId, course, isActive, search, limit = 100, skip = 0 } = req.query;
     
@@ -81,7 +70,6 @@ export const getAllStudents = async (req, res) => {
         pages: Math.ceil(totalCount / parseInt(limit))
       }
     });
->>>>>>> ra_new_part
   } catch (err) {
     console.error('Get All Students Error:', err.message);
     console.error('Stack:', err.stack);
@@ -92,11 +80,7 @@ export const getAllStudents = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// GET /api/student/:id -> single student (admin / batchrep / self)
-=======
 // GET /api/students/:id -> single student (admin / batchrep / self)
->>>>>>> ra_new_part
 export const getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -116,9 +100,7 @@ export const getStudentById = async (req, res) => {
     });
   }
 };
-<<<<<<< HEAD
 
-=======
 // GET /api/students/batch/:batchId -> get all students in a batch
 export const getStudentsByBatch = async (req, res) => {
   try {
@@ -188,7 +170,6 @@ export const getStudentsByBatch = async (req, res) => {
     });
   }
 };
->>>>>>> ra_new_part
 
 // PATCH /api/student/:id/manual-deactivate  -> body: { manualInactive: true/false }
 export const setStudentManualInactive = async (req, res) => {
