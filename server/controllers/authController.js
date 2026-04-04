@@ -1,9 +1,6 @@
 import User from '../models/User.js'
-<<<<<<< HEAD
-=======
 import PendingStudent from '../models/PendingStudent.js'
 import Rep from '../models/Rep.js'
->>>>>>> ra_new_part
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -14,34 +11,13 @@ const sanitizeUser = (user) => ({
     u_email: user.u_email,
     u_role: user.u_role || "student",
     isBatchRep: !!user.isBatchRep,
-<<<<<<< HEAD
-=======
     u_regno: user.u_regno,  // ✅ Include Student ID
->>>>>>> ra_new_part
     u_faculty: user.u_faculty,
     u_course: user.u_course,
     u_year: user.u_year,
     u_semester: user.u_semester
 });
 
-<<<<<<< HEAD
-
-// Register new user
-export const signin = async (req, res) => {
-    try {
-        const { u_name, u_email, u_password, u_role, u_faculty, u_course, u_year, u_semester } = req.body;
-        
-        // Validate required fields
-        if (!u_name || !u_email || !u_password) {
-            return res.status(400).json({ 
-                message: "Please provide all required fields: u_name, u_email, u_password" 
-            });
-        }
-        
-        let user = await User.findOne({ u_email });
-        if (user) return res.status(400).json({ message: "User already exists" });
-
-=======
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isValidRegNo = (regNo) => /^[A-Za-z0-9\-_/]{3,20}$/.test(regNo);
 const isStrongPassword = (password) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
@@ -181,24 +157,10 @@ export const signin = async (req, res) => {
         }
 
         // ✅ ALL VALIDATIONS PASSED - Create the account
->>>>>>> ra_new_part
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(u_password, salt);
 
         const newUser = new User({
-<<<<<<< HEAD
-            u_name,
-            u_email,
-            u_password: hashedPassword,
-            u_role: u_role || "student",
-            u_faculty: u_faculty || null,
-            u_course: u_course || null,
-            u_year: u_year || 1,
-            u_semester: u_semester || 1
-        });
-
-        await newUser.save();
-=======
             u_name: normalizedName,
             u_email: normalizedEmail,
             u_password: hashedPassword,
@@ -228,7 +190,6 @@ export const signin = async (req, res) => {
             userId: newUser._id  // Link to User account
         });
         console.log('✅ PendingStudent updated with signup data');
->>>>>>> ra_new_part
 
         const token = jwt.sign(
             { id: newUser._id, u_role: newUser.u_role },
@@ -236,30 +197,20 @@ export const signin = async (req, res) => {
             { expiresIn: "7d" }
         );
 
-<<<<<<< HEAD
-        res.status(200).json({
-            message: "User registered successfully",
-=======
         res.status(201).json({
             message: "✅ Account created successfully!",
             code: "REGISTRATION_SUCCESS",
             accountExists: false,  // ✅ Account just created successfully
->>>>>>> ra_new_part
             token,
             user: sanitizeUser(newUser)
         });
     } catch (err) {
-<<<<<<< HEAD
-        console.log(err);
-        res.status(500).json({ message: "Server error" });
-=======
         console.error('❌ Registration error:', err.message);
         res.status(500).json({ 
             message: "Server error. Please try again.",
             code: "SERVER_ERROR",
             accountExists: false
         });
->>>>>>> ra_new_part
     }
 };
 
@@ -267,15 +218,6 @@ export const signin = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { u_email, u_password } = req.body;
-<<<<<<< HEAD
-
-        const user = await User.findOne({ u_email }).populate("u_faculty u_course");
-        if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
-        const isMatch = await bcrypt.compare(u_password, user.u_password);
-        if (!isMatch) {
-            console.log("❌ Backend: Invalid password for user:", u_email);
-=======
         const normalizedEmail = (u_email || "").trim().toLowerCase();
 
         if (!normalizedEmail || !u_password) {
@@ -296,16 +238,11 @@ export const login = async (req, res) => {
         const isMatch = await bcrypt.compare(u_password, hashedPassword);
         if (!isMatch) {
             console.log("❌ Backend: Invalid password for user:", normalizedEmail);
->>>>>>> ra_new_part
             return res.status(400).json({ message: "Invalid credentials" });
         }
         
         console.log("✅ Backend: Password match successful");
 
-<<<<<<< HEAD
-        const token = jwt.sign(
-            { id: user._id, u_role: user.u_role },
-=======
         const userRole = isRep ? (user.r_role || "batchrep") : (user.u_role || "student");
         const userName = isRep ? user.r_name : user.u_name;
         const userEmail = isRep ? user.r_email : user.u_email;
@@ -313,33 +250,17 @@ export const login = async (req, res) => {
 
         const token = jwt.sign(
             { id: user._id, u_role: userRole },
->>>>>>> ra_new_part
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
         
-<<<<<<< HEAD
-        console.log("🔑 Backend: Token generated for user:", user.u_name);
-        console.log("👤 Backend: User role:", user.u_role);
-=======
         console.log("🔑 Backend: Token generated for user:", userName);
         console.log("👤 Backend: User role:", userRole);
->>>>>>> ra_new_part
 
         const loginResponse = {
             token,
             user: {
                 id: user._id,
-<<<<<<< HEAD
-                u_name: user.u_name,
-                u_email: user.u_email,
-                u_role: user.u_role || "student",
-                isBatchRep: user.isBatchRep || false,
-                u_faculty: user.u_faculty,
-                u_course: user.u_course,
-                u_year: user.u_year,
-                u_semester: user.u_semester
-=======
                 u_name: userName,
                 u_email: userEmail,
                 u_role: userRole,
@@ -348,7 +269,6 @@ export const login = async (req, res) => {
                 u_course: isRep ? null : user.u_course,
                 u_year: isRep ? null : user.u_year,
                 u_semester: isRep ? null : user.u_semester
->>>>>>> ra_new_part
             }
         };
 
@@ -362,9 +282,6 @@ export const login = async (req, res) => {
 // Get user profile
 export const getProfile = async (req, res) => {
     try {
-<<<<<<< HEAD
-        const user = await User.findById(req.user.id);
-=======
         if (!req.user) return res.status(404).json({ message: "User not found" });
 
         if (req.user.sourceModel === 'Rep') {
@@ -378,7 +295,6 @@ export const getProfile = async (req, res) => {
         }
 
         const user = await User.findById(req.user._id).select('-u_password');
->>>>>>> ra_new_part
         if (!user) return res.status(404).json({ message: "User not found" });
         res.status(200).json(user);
     } catch (err) {
