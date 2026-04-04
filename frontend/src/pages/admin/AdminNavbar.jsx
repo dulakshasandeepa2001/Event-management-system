@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { FaUser, FaPowerOff } from "react-icons/fa";
+=======
+import { FaUser, FaPowerOff, FaBell } from "react-icons/fa";
+>>>>>>> ra_new_part
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -25,7 +29,15 @@ const AdminNavbar = () => {
                 </div>
                 <h3 className="text-white font-semibold">Welcome, {user?.u_name}</h3>
             </div>
+<<<<<<< HEAD
             <div>
+=======
+            <div className='flex items-center space-x-4'>
+                <button className="relative p-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border border-yellow-500/50 rounded-lg transition">
+                    <FaBell className='text-lg'/>
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+>>>>>>> ra_new_part
                 <div id='bt_section' className='relative'>
                     <button className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 border border-red-500/50 rounded-lg transition" onClick={() => setConfirmOpen(true)}> 
                         <FaPowerOff className='text-lg'/> 

@@ -322,6 +322,81 @@ const AddBatch = () => {
         )}
       </div>
 
+<<<<<<< HEAD
+=======
+      {/* Preview Modal */}
+      {previewOpen && preview && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1f2e] border border-gray-700 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto p-8">
+            <h3 className="text-2xl font-bold text-white mb-6">Upload Preview</h3>
+            
+            {preview.summary && (
+              <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500 rounded-lg">
+                <p className="text-blue-300 font-semibold">Summary: new <strong className="text-blue-400">{preview.summary.newCount || 0}</strong>, continuing <strong className="text-blue-400">{preview.summary.continuingCount || 0}</strong>, removed <strong className="text-blue-400">{preview.summary.removedCount || 0}</strong></p>
+              </div>
+            )}
+
+            {preview.errors && preview.errors.length > 0 && (
+              <div className="mb-6 bg-red-500/10 border border-red-500 rounded-lg p-4">
+                <p className="text-red-400 font-semibold mb-2">Errors found:</p>
+                <ul className="text-red-300 text-sm space-y-1">
+                  {preview.errors.slice(0, 5).map((err, i) => (
+                    <li key={i}>• Row {err.row}: {err.message || err}</li>
+                  ))}
+                  {preview.errors.length > 5 && <li>• ... and {preview.errors.length - 5} more</li>}
+                </ul>
+              </div>
+            )}
+
+            {(preview.preview || []).length > 0 && (
+              <div className="mb-6">
+                <p className="text-gray-300 font-semibold mb-3">Preview Data (first 10 rows):</p>
+                <div className="overflow-x-auto bg-[#0f1419] rounded-lg">
+                  <table className="w-full text-xs text-gray-300">
+                    <thead className="border-b border-gray-600">
+                      <tr>
+                        <th className="text-left py-2 px-3 text-gray-400">RegNo</th>
+                        <th className="text-left py-2 px-3 text-gray-400">Name</th>
+                        <th className="text-left py-2 px-3 text-gray-400">Email</th>
+                        <th className="text-left py-2 px-3 text-gray-400">Group</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(preview.preview || []).slice(0, 10).map((row, i) => (
+                        <tr key={i} className="border-b border-gray-700 hover:bg-gray-700/20">
+                          <td className="py-2 px-3 text-gray-400">{row.regno || "—"}</td>
+                          <td className="py-2 px-3 text-gray-400">{row.name || "—"}</td>
+                          <td className="py-2 px-3 text-gray-400">{row.email || "—"}</td>
+                          <td className="py-2 px-3 text-gray-400">{row.group || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4">
+              <button 
+                onClick={handleApply}
+                disabled={applying}
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
+              >
+                <FaCheck /> {applying ? "Applying..." : "Confirm & Apply"}
+              </button>
+              <button 
+                onClick={() => setPreviewOpen(false)}
+                disabled={applying}
+                className="px-6 bg-[#1a1f2e] border border-gray-700 text-white font-semibold py-3 rounded-lg hover:border-gray-600 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+>>>>>>> ra_new_part
     </div>
   );
 };

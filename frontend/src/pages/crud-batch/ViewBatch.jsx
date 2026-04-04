@@ -42,6 +42,7 @@ const BatchView = () => {
     if (!id) return;
     setLoading(true);
     try {
+<<<<<<< HEAD
       const res = await API.get(`/batch/${id}`);
       // backend returns { batch, students, studentCount, activeCount }
       setBatch(res.data.batch || null);
@@ -49,6 +50,44 @@ const BatchView = () => {
     } catch (err) {
       console.error("Failed to load batch:", err);
       toast.error("Failed to load batch");
+=======
+      // Fetch batch details
+      const batchRes = await API.get(`/batch/${id}`);
+      const batchData = batchRes.data.batch || null;
+      setBatch(batchData);
+      console.log('✅ Batch loaded:', batchData?.name, 'ID:', id);
+
+      // Fetch students by batchId
+      console.log('🔵 Fetching students from /students with batchId=' + id);
+      const studentsRes = await API.get(`/students?limit=100&skip=0&batchId=${id}`);
+      console.log('🟢 Students response:', studentsRes.data);
+      
+      if (studentsRes.data && studentsRes.data.students && studentsRes.data.students.length > 0) {
+        setStudents(studentsRes.data.students);
+        console.log('✅ Found:', studentsRes.data.students.length, 'students in batch');
+      } else {
+        console.warn('⚠️ No students found for this batchId, trying course-based fetch...');
+        
+        // Fallback: fetch by course name if batchId returned nothing
+        if (batchData?.course) {
+          const courseRes = await API.get(`/students?limit=100&skip=0&course=${encodeURIComponent(batchData.course)}`);
+          console.log('🟢 Course-based response:', courseRes.data);
+          if (courseRes.data && courseRes.data.students) {
+            setStudents(courseRes.data.students);
+            console.log('✅ Found:', courseRes.data.students.length, 'students by course');
+          } else {
+            setStudents([]);
+          }
+        } else {
+          setStudents([]);
+        }
+      }
+    } catch (err) {
+      console.error("❌ Failed to load batch:", err);
+      console.error('Error details:', err.response?.data || err.message);
+      toast.error("Failed to load batch");
+      setStudents([]);
+>>>>>>> ra_new_part
     } finally {
       setLoading(false);
     }
@@ -173,11 +212,24 @@ const BatchView = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const s = res.data.summary || {};
+<<<<<<< HEAD
       toast.success(`Upload applied — new: ${s.newCount || 0}, continuing: ${s.continuingCount || 0}, removed: ${s.removedCount || 0}`);
       setPreview(null);
       setPreviewOpen(false);
       setUploadFile(null);
       fetchBatch();
+=======
+      toast.success(`✅ Upload applied — new: ${s.newCount || 0}, continuing: ${s.continuingCount || 0}, removed: ${s.removedCount || 0}`);
+      setPreview(null);
+      setPreviewOpen(false);
+      setUploadFile(null);
+      
+      // Wait a moment for database to write, then refresh
+      setTimeout(() => {
+        fetchBatch();
+        toast.info("Student list refreshed");
+      }, 500);
+>>>>>>> ra_new_part
     } catch (err) {
       console.error("Apply error:", err);
       toast.error(err.response?.data?.message || "Apply failed");
@@ -215,6 +267,11 @@ const BatchView = () => {
             {batch?.isActive ? "Active" : "Deactivated"}
           </div>
 
+<<<<<<< HEAD
+=======
+          <button onClick={fetchBatch} disabled={loading} className="px-3 py-1 border rounded hover:bg-gray-50" title="Refresh data"><FaSyncAlt className={loading ? "animate-spin" : ""} /></button>
+
+>>>>>>> ra_new_part
           <button onClick={startEdit} className="px-3 py-1 border rounded hover:bg-gray-50" title="Edit batch"><FaEdit /></button>
 
           {batch?.isActive ? (

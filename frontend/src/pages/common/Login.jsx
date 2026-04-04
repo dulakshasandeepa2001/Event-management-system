@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
+=======
+import welcomeIllustration from "../../assets/qwe1234.jpg";
+>>>>>>> ra_new_part
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -79,7 +83,11 @@ const Login = () => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+<<<<<<< HEAD
                 className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+=======
+                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+>>>>>>> ra_new_part
                 placeholder="Enter your email"
                 required
               />
@@ -96,7 +104,11 @@ const Login = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+<<<<<<< HEAD
                   className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition pr-12"
+=======
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
+>>>>>>> ra_new_part
                   placeholder="Enter your password"
                   required
                 />
@@ -112,7 +124,11 @@ const Login = () => {
 
             {/* Forgot Password */}
             <div className="flex justify-start">
+<<<<<<< HEAD
               <a href="#" className="text-gray-400 text-sm hover:text-purple-500 transition">
+=======
+              <a href="#" className="text-gray-400 text-sm hover:text-cyan-500 transition">
+>>>>>>> ra_new_part
                 Forgot Password?
               </a>
             </div>
@@ -120,7 +136,11 @@ const Login = () => {
             {/* Login Button */}
             <button
               type="submit"
+<<<<<<< HEAD
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200"
+=======
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-lg transition duration-200"
+>>>>>>> ra_new_part
             >
               Login
             </button>
@@ -131,7 +151,11 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate("/register")}
+<<<<<<< HEAD
                 className="text-white hover:text-purple-500 transition font-medium"
+=======
+                className="text-white hover:text-cyan-500 transition font-medium"
+>>>>>>> ra_new_part
               >
                 Sign up
               </button>
@@ -141,19 +165,29 @@ const Login = () => {
       </div>
 
       {/* Right Side - Welcome Section */}
+<<<<<<< HEAD
       <div className="bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-purple-600/30 backdrop-blur-3xl"></div>
+=======
+      <div className="bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/30 backdrop-blur-3xl"></div>
+>>>>>>> ra_new_part
         
         <div className="relative z-10 text-center text-white space-y-6 max-w-lg">
           <div className="space-y-4">
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               Welcome to<br />student portal
             </h2>
+<<<<<<< HEAD
             <p className="text-purple-100 text-lg">
+=======
+            <p className="text-cyan-100 text-lg">
+>>>>>>> ra_new_part
               Login to access your account
             </p>
           </div>
 
+<<<<<<< HEAD
           {/* Illustration Placeholder */}
           <div className="mt-12 flex justify-center">
             <div className="w-full max-w-md">
@@ -190,6 +224,14 @@ const Login = () => {
                 </g>
               </svg>
             </div>
+=======
+          <div className="mt-12 flex justify-center">
+            <img
+              src={welcomeIllustration}
+              alt="Student portal illustration"
+              className="w-full max-w-md rounded-2xl object-cover shadow-2xl shadow-blue-900/30"
+            />
+>>>>>>> ra_new_part
           </div>
         </div>
 

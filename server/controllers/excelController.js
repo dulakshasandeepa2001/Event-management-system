@@ -2,6 +2,10 @@ import multer from "multer";
 import XLSX from "xlsx";
 import User from "../models/User.js";
 import Batch from "../models/Batch.js";
+<<<<<<< HEAD
+=======
+import PendingStudent from "../models/PendingStudent.js";
+>>>>>>> ra_new_part
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
@@ -75,6 +79,21 @@ export const uploadExcel = async (req, res) => {
         parsedRows.push({ regno, name, email, group });
       }
 
+<<<<<<< HEAD
+=======
+      // Check for duplicate emails in the Excel file itself
+      const emailMap = {};
+      for (const row of parsedRows) {
+        if (row.email) {
+          if (emailMap[row.email]) {
+            errors.push({ row: parsedRows.indexOf(row) + 2, message: `Duplicate email: ${row.email}` });
+          } else {
+            emailMap[row.email] = true;
+          }
+        }
+      }
+
+>>>>>>> ra_new_part
       // fetch previous students — match by batchId OR by course (so both styles are supported)
       const previousStudents = await User.find({
         u_regno: { $exists: true },
@@ -91,6 +110,21 @@ export const uploadExcel = async (req, res) => {
       const setContinuing = incomingRegNos.filter((r) => previousRegNos.includes(r));
       const setRemoved = previousRegNos.filter((r) => !incomingRegNos.includes(r));
 
+<<<<<<< HEAD
+=======
+      // Check for emails that already exist in database (for new students)
+      const existingEmails = [];
+      for (const regno of setNew) {
+        const p = parsedRows.find((x) => x.regno === regno);
+        if (p && p.email) {
+          const emailExists = await User.findOne({ u_email: p.email });
+          if (emailExists) {
+            existingEmails.push({ regno: p.regno, email: p.email, message: `Email already in use by another user` });
+          }
+        }
+      }
+
+>>>>>>> ra_new_part
       // If commit=false -> return preview only
       if (!commit) {
         return res.status(200).json({
@@ -99,13 +133,20 @@ export const uploadExcel = async (req, res) => {
             newCount: setNew.length,
             continuingCount: setContinuing.length,
             removedCount: setRemoved.length,
+<<<<<<< HEAD
             errorsCount: errors.length,
           },
           errors,
+=======
+            errorsCount: errors.length + existingEmails.length,
+          },
+          errors: [...errors, ...existingEmails],
+>>>>>>> ra_new_part
         });
       }
 
       // commit === true -> apply changes
+<<<<<<< HEAD
       const created = [];
       for (const regno of setNew) {
         const p = parsedRows.find((x) => x.regno === regno) || {};
@@ -166,10 +207,54 @@ export const uploadExcel = async (req, res) => {
       }
 
       // update batch lastUploadSummary so list page can show quick summary
+=======
+      // SAVE PENDING STUDENTS (waiting for signup)
+      const pending = [];
+      const pendingErrors = [];
+
+      for (const row of parsedRows) {
+        const { regno, name, email } = row;
+
+        // Check if already has approved account
+        const approvedStudent = await User.findOne({ u_regno: regno });
+        if (approvedStudent) {
+          pendingErrors.push({ regno, message: "Student already has an approved account" });
+          continue;
+        }
+
+        // Check for duplicate emails in committed users
+        const emailExists = await User.findOne({ u_email: email });
+        if (emailExists && emailExists.u_rolle !== "admin") {
+          pendingErrors.push({ regno, email, message: "Email already registered to another student" });
+          continue;
+        }
+
+        // Create or update pending student record
+        await PendingStudent.findOneAndUpdate(
+          { u_regno: regno, u_email: email },
+          {
+            u_regno: regno,
+            u_name: name,
+            u_email: email,
+            u_course: batch.course,
+            u_year: semester ? Math.ceil(semester / 2) : 1,
+            u_semester: semester || 1,
+            batchId: batch._id,
+            u_isApproved: false
+          },
+          { upsert: true, new: true }
+        );
+
+        pending.push({ regno, name, email, status: "Pending student approval via signup" });
+      }
+
+      // Update batch summary
+>>>>>>> ra_new_part
       try {
         await Batch.findByIdAndUpdate(batch._id, {
           lastUploadSummary: {
             date: new Date(),
+<<<<<<< HEAD
             newCount: created.length,
             continuingCount: setContinuing.length,
             removedCount: removedUpdated.length
@@ -191,6 +276,26 @@ export const uploadExcel = async (req, res) => {
         created,
         removed: removedUpdated,
         errors,
+=======
+            newCount: pending.length,
+            continuingCount: 0,
+            removedCount: 0
+          }
+        });
+      } catch (e) {
+        console.error("Failed to update batch.lastUploadSummary:", e);
+      }
+
+      // Return upload result
+      return res.status(200).json({
+        summary: {
+          pendingCount: pending.length,
+          errorCount: pendingErrors.length,
+        },
+        pending,
+        errors: pendingErrors,
+        message: `✅ Uploaded ${pending.length} students. They must sign up to activate their accounts.`
+>>>>>>> ra_new_part
       });
     } catch (error) {
       console.error("Excel upload error:", error);

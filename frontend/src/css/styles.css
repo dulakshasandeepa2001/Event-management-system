@@ -1,5 +1,28 @@
+<<<<<<< HEAD
 .my_font_family{
     font-family: 'Times New Roman', Times, serif;
+=======
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
+:root {
+    --reps-bg: #050b18;
+    --reps-panel: #09122a;
+    --reps-panel-soft: #0d1734;
+    --reps-accent: #22d3ee;
+    --reps-warn: #fb923c;
+}
+
+.my_font_family{
+    font-family: 'Sora', 'Segoe UI', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at 12% 8%, #16224a 0%, #050b18 50%);
+}
+
+button:hover{
+    cursor: pointer;
+>>>>>>> ra_new_part
 }
 
 #sidebar_head{

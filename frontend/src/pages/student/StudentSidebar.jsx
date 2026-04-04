@@ -1,5 +1,9 @@
 import React from 'react'
+<<<<<<< HEAD
 import { FaCalendarAlt, FaTachometerAlt, FaCog, FaQuestionCircle } from 'react-icons/fa'
+=======
+import { FaFileUpload, FaTachometerAlt, FaCog, FaGraduationCap, FaHeart } from 'react-icons/fa'
+>>>>>>> ra_new_part
 import { NavLink } from 'react-router-dom'  
 
 const StudentSidebar = () => {
@@ -21,16 +25,48 @@ const StudentSidebar = () => {
                      flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
                   <FaTachometerAlt/> <span>Dashboard</span>
                </NavLink>
+<<<<<<< HEAD
+=======
+               
+               <NavLink to="/student-dashboard/list-event" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                  flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
+                  <FaTachometerAlt/> <span>Events</span>
+               </NavLink>
+
+               <NavLink to="/student-dashboard/list-marks" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                  flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
+                  <FaGraduationCap/> <span>Exam Results</span>
+               </NavLink>
+
+               <NavLink to="/student-dashboard/submissions" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>   
+                  <FaFileUpload/> <span>Submissions</span>
+               </NavLink>
+
+               <NavLink to="/student-dashboard/mental-health" className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
+                     flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`}>   
+                  <FaHeart/> <span>Mental Health</span>
+               </NavLink>
+>>>>>>> ra_new_part
             </div>
          </div>
 
          {/* Bottom Links */}
          <div className="border-t border-gray-700">
             <div className="p-4 space-y-2">                                             
+<<<<<<< HEAD
                <NavLink className={({isActive})=>`${isActive ? "bg-blue-500/20 border-blue-500":"border-gray-700"} 
                   flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition`} end>   
                   <FaCog/> <span>Settings</span>
                </NavLink>
+=======
+               <button
+                  type="button"
+                  className="w-full border-gray-700 flex items-center space-x-3 px-4 py-2 rounded border hover:border-blue-500 transition"
+               >
+                  <FaCog/> <span>Settings</span>
+               </button>
+>>>>>>> ra_new_part
             </div>
          </div>
       </div>

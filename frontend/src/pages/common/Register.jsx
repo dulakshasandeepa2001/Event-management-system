@@ -2,10 +2,18 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
+<<<<<<< HEAD
+=======
+import welcomeIllustration from "../../assets/qwe1234.jpg";
+>>>>>>> ra_new_part
 
 const Register = () => {
   const [name, setName] = useState("");
   const [studentId, setStudentId] = useState("");
+<<<<<<< HEAD
+=======
+  const [studentEmail, setStudentEmail] = useState("");
+>>>>>>> ra_new_part
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [faculty, setFaculty] = useState("");
@@ -17,6 +25,13 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+<<<<<<< HEAD
+=======
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const regNoRegex = /^[A-Za-z0-9\-_/]{3,20}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+>>>>>>> ra_new_part
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,19 +39,82 @@ const Register = () => {
     setError("");
     setSuccess("");
 
+<<<<<<< HEAD
     // Validation
+=======
+    const normalizedName = name.trim();
+    const normalizedStudentId = studentId.trim().toUpperCase();
+    const normalizedEmail = studentEmail.trim().toLowerCase();
+    const normalizedFaculty = faculty.trim();
+    const normalizedCourse = course.trim();
+    const normalizedYear = year ? Number(year) : null;
+    const normalizedSemester = semester ? Number(semester) : null;
+
+    // Validation
+    if (!normalizedName || normalizedName.length < 3) {
+      setError("Full Name must be at least 3 characters");
+      return;
+    }
+
+    if (!normalizedStudentId) {
+      setError("Student ID is required");
+      return;
+    }
+
+    if (!regNoRegex.test(normalizedStudentId)) {
+      setError("Student ID must be 3-20 chars and contain only letters, numbers, -, _, /");
+      return;
+    }
+    
+    if (!normalizedEmail) {
+      setError("Student Email is required");
+      return;
+    }
+
+    if (!emailRegex.test(normalizedEmail)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!normalizedFaculty) {
+      setError("Faculty is required");
+      return;
+    }
+
+    if (!normalizedCourse || normalizedCourse.length < 2) {
+      setError("Course is required");
+      return;
+    }
+
+    if (!normalizedYear || normalizedYear < 1 || normalizedYear > 4) {
+      setError("Please select a valid year (1-4)");
+      return;
+    }
+
+    if (!normalizedSemester || normalizedSemester < 1 || normalizedSemester > 8) {
+      setError("Please select a valid semester (1-8)");
+      return;
+    }
+
+>>>>>>> ra_new_part
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
+<<<<<<< HEAD
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
+=======
+    if (!passwordRegex.test(password)) {
+      setError("Password must be at least 8 characters with letters and numbers");
+>>>>>>> ra_new_part
       return;
     }
 
     try {
       const response = await API.post("/auth/register", {
+<<<<<<< HEAD
         u_name: name,
         u_email: studentId + "@my.sliit.lk",
         u_password: password,
@@ -48,12 +126,46 @@ const Register = () => {
       });
 
       setSuccess("Account created successfully! Redirecting to login...");
+=======
+        u_name: normalizedName,
+        u_email: normalizedEmail,
+        u_password: password,
+        u_role: "student",
+        u_regno: normalizedStudentId,
+        u_faculty: normalizedFaculty,
+        u_course: normalizedCourse,
+        u_year: normalizedYear,
+        u_semester: normalizedSemester
+      });
+
+      setSuccess("✅ Account created successfully! Redirecting to login...");
+>>>>>>> ra_new_part
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (err) {
       console.error(err);
+<<<<<<< HEAD
       setError(err.response?.data?.message || "Registration failed");
+=======
+      
+      // ✅ Get structured error response from backend
+      const errorResponse = err.response?.data;
+      const accountExists = errorResponse?.accountExists || false;
+      const code = errorResponse?.code || "UNKNOWN";
+      const message = errorResponse?.message || "Registration failed";
+
+      // ✅ Handle based on accountExists flag
+      if (accountExists === true) {
+        // Account already created - suggest user login
+        setError(`${message}\n\nUse the Login button to access your existing account.`);
+        console.log('⚠️ Account already exists:', { code, accountExists });
+      } else if (accountExists === false) {
+        // Account doesn't exist but validation failed - show why
+        setError(message);
+        console.log('❌ Validation failed:', { code, accountExists, message });
+      }
+>>>>>>> ra_new_part
     }
   };
 
@@ -69,7 +181,11 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
+<<<<<<< HEAD
               <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm">
+=======
+              <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm whitespace-pre-wrap">
+>>>>>>> ra_new_part
                 {error}
               </div>
             )}
@@ -89,12 +205,20 @@ const Register = () => {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+<<<<<<< HEAD
                 className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none transition"
                 placeholder="Enter your full name"
+=======
+                className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                placeholder="Enter your full name"
+                  minLength={3}
+                  maxLength={80}
+>>>>>>> ra_new_part
                 required
               />
             </div>
 
+<<<<<<< HEAD
             {/* Student ID Input */}
             <div className="space-y-2">
               <label htmlFor="studentId" className="text-gray-400 text-sm">
@@ -235,13 +359,198 @@ const Register = () => {
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
+=======
+            {/* Student ID & Email Inputs - Responsive Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Student ID Input */}
+              <div className="space-y-2">
+                <label htmlFor="studentId" className="text-gray-400 text-sm">
+                  Student ID *
+                </label>
+                <input
+                  type="text"
+                  id="studentId"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  placeholder="e.g., CS001"
+                  pattern="[A-Za-z0-9\\-_/]{3,20}"
+                  minLength={3}
+                  maxLength={20}
+                  required
+                />
+              </div>
+
+              {/* Student Email Input */}
+              <div className="space-y-2">
+                <label htmlFor="studentEmail" className="text-gray-400 text-sm">
+                  Student Email *
+                </label>
+                <input
+                  type="email"
+                  id="studentEmail"
+                  value={studentEmail}
+                  onChange={(e) => setStudentEmail(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  placeholder="e.g., student@example.com"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Faculty & Course Inputs - Responsive Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Faculty Input */}
+              <div className="space-y-2">
+                <label htmlFor="faculty" className="text-gray-400 text-sm">
+                  Faculty
+                </label>
+                <select
+                  id="faculty"
+                  value={faculty}
+                  onChange={(e) => setFaculty(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
+                >
+                  <option value="">Select Faculty</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Business">Business</option>
+                  <option value="Science">Science</option>
+                  <option value="Arts">Arts</option>
+                  <option value="Medicine">Medicine</option>
+                  <option value="Computing">Computing</option>
+                </select>
+              </div>
+
+              {/* Course Input */}
+              <div className="space-y-2">
+                <label htmlFor="course" className="text-gray-400 text-sm">
+                  Course
+                </label>
+                <input
+                  type="text"
+                  id="course"
+                  value={course}
+                  onChange={(e) => setCourse(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  placeholder="e.g., Software Engineering"
+                  minLength={2}
+                  maxLength={80}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Year & Semester Inputs - Responsive Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Year Input */}
+              <div className="space-y-2">
+                <label htmlFor="year" className="text-gray-400 text-sm">
+                  Year
+                </label>
+                <select
+                  id="year"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
+                >
+                  <option value="">Select Year</option>
+                  <option value="1">Year 1</option>
+                  <option value="2">Year 2</option>
+                  <option value="3">Year 3</option>
+                  <option value="4">Year 4</option>
+                </select>
+              </div>
+
+              {/* Semester Input */}
+              <div className="space-y-2">
+                <label htmlFor="semester" className="text-gray-400 text-sm">
+                  Semester
+                </label>
+                <select
+                  id="semester"
+                  value={semester}
+                  onChange={(e) => setSemester(e.target.value)}
+                  className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition"
+                  required
+                >
+                  <option value="">Select Semester</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Password & Confirm Password Inputs - Responsive Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-gray-400 text-sm">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
+                    placeholder="Create a password"
+                    minLength={8}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-gray-400 text-sm">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-500 focus:outline-none transition pr-12"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+>>>>>>> ra_new_part
               </div>
             </div>
 
             {/* Register Button */}
             <button
               type="submit"
+<<<<<<< HEAD
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
+=======
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
+>>>>>>> ra_new_part
             >
               Create Account
             </button>
@@ -252,7 +561,11 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
+<<<<<<< HEAD
                 className="text-white hover:text-purple-500 transition font-medium"
+=======
+                className="text-white hover:text-cyan-500 transition font-medium"
+>>>>>>> ra_new_part
               >
                 Login
               </button>
@@ -262,19 +575,29 @@ const Register = () => {
       </div>
 
       {/* Right Side - Welcome Section */}
+<<<<<<< HEAD
       <div className="bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-purple-600/30 backdrop-blur-3xl"></div>
+=======
+      <div className="bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/30 backdrop-blur-3xl"></div>
+>>>>>>> ra_new_part
         
         <div className="relative z-10 text-center text-white space-y-6 max-w-lg">
           <div className="space-y-4">
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               Join our<br />student portal
             </h2>
+<<<<<<< HEAD
             <p className="text-purple-100 text-lg">
+=======
+            <p className="text-cyan-100 text-lg">
+>>>>>>> ra_new_part
               Create an account to get started
             </p>
           </div>
 
+<<<<<<< HEAD
           {/* Illustration Placeholder */}
           <div className="mt-12 flex justify-center">
             <div className="w-full max-w-md">
@@ -311,6 +634,14 @@ const Register = () => {
                 </g>
               </svg>
             </div>
+=======
+          <div className="mt-12 flex justify-center">
+            <img
+              src={welcomeIllustration}
+              alt="Student portal illustration"
+              className="w-full max-w-md rounded-2xl object-cover shadow-2xl shadow-blue-900/30"
+            />
+>>>>>>> ra_new_part
           </div>
         </div>
 
@@ -327,4 +658,8 @@ const Register = () => {
   );
 };
 
+<<<<<<< HEAD
 export default Register;
+=======
+export default Register;
+>>>>>>> ra_new_part

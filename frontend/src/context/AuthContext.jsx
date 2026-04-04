@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (u_email, u_password) => {
     console.log("📡 AuthContext: Sending login request to API...");
     console.log("📧 Email:", u_email);
+<<<<<<< HEAD
     
     // Only append @my.sliit.lk for emails without a domain (student emails like "johndoe@gmail.com")
     // Don't append if it already has @example.com or full email format
@@ -61,6 +62,10 @@ export const AuthProvider = ({ children }) => {
       finalEmail = u_email + "@my.sliit.lk";
     }
     // Otherwise keep the email as-is (admin@example.com, brep1@example.com, etc.)
+=======
+
+    const finalEmail = u_email.trim().toLowerCase();
+>>>>>>> ra_new_part
     
     const res = await API.post("/auth/login", {
       u_email: finalEmail,
