@@ -1,42 +1,26 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
-import { FaUser, FaPowerOff } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import ConfirmModal from "../components/ConfirmModal";
-=======
 import { FaUser, FaPowerOff, FaBell } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import API from "../../api";
->>>>>>> ra_new_part
+import ThemeToggleButton from "../../components/ThemeToggleButton.jsx";
 
 const StudentNavbar = () => {
 
   const { user, logout, loading } = useAuth();
   const [confirmOpen, setConfirmOpen] = useState(false);
-<<<<<<< HEAD
-=======
     const [notificationOpen, setNotificationOpen] = useState(false);
         const [submissions, setSubmissions] = useState([]);
->>>>>>> ra_new_part
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [user, loading, navigate]);
 
-<<<<<<< HEAD
-  if (loading) return null; // or spinner
-
-    return (
-        <div className='flex justify-between items-center bg-[#1a1f2e] border-b border-gray-700 h-16 px-6 my_font_family'>
-=======
     useEffect(() => {
         const fetchSubmissions = async () => {
-            if (!user || user.u_role !== "student") return;
+            if (!user || !["student", "lecturer"].includes(user.u_role)) return;
             try {
                 const res = await API.get("/submissions/student/my");
                 setSubmissions(res.data?.submissions || []);
@@ -48,7 +32,7 @@ const StudentNavbar = () => {
         fetchSubmissions();
     }, [user]);
 
-    const formatDate = (value) => new Date(value).toLocaleDateString("en-GB");
+    const formatDate = (value) => new Date(value).toLocaleDateString("en-GB");  
 
     const getTimeLeftLabel = (value) => {
         const due = new Date(value).getTime();
@@ -58,30 +42,27 @@ const StudentNavbar = () => {
         if (diff <= 0) return "Overdue";
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        if (days > 0) return `${days} day${days === 1 ? "" : "s"} left`;
+        if (days > 0) return `${days} day${days === 1 ? "" : "s"} left`;        
 
         const hours = Math.floor(diff / (1000 * 60 * 60));
-        if (hours > 0) return `${hours} hour${hours === 1 ? "" : "s"} left`;
+        if (hours > 0) return `${hours} hour${hours === 1 ? "" : "s"} left`;    
 
         const minutes = Math.max(1, Math.floor(diff / (1000 * 60)));
         return `${minutes} minute${minutes === 1 ? "" : "s"} left`;
     };
 
-  if (loading) return null; // or spinner
+  if (loading) return null;
 
     return (
         <div className='relative flex justify-between items-center bg-[#1a1f2e] border-b border-gray-700 h-16 px-6 my_font_family'>
->>>>>>> ra_new_part
             <div className='flex items-center text-white space-x-3'>
                 <FaUser className='text-blue-500'/>
                 <h3 className="text-white font-semibold">Welcome, {user?.u_name}</h3>
             </div>
-<<<<<<< HEAD
-            <div>
-=======
             <div className='flex items-center space-x-4'>
+                <ThemeToggleButton variant='compact' />
                 <button
-                    onClick={() => setNotificationOpen((prev) => !prev)}
+                    onClick={() => setNotificationOpen((prev) => !prev)}        
                     className="relative p-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border border-yellow-500/50 rounded-lg transition"
                 >
                     <FaBell className='text-lg'/>
@@ -91,14 +72,11 @@ const StudentNavbar = () => {
                         </span>
                     )}
                 </button>
->>>>>>> ra_new_part
                 <div id='bt_section' className='relative'>
                     <button className="p-2 bg-red-500/20 text-red-400 border border-red-500 rounded-lg hover:bg-red-500/30 transition" onClick={() => setConfirmOpen(true)}> <FaPowerOff/> </button>
                     <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-2 py-1 border border-red-500 bg-red-500/20 text-red-400 z-50 rounded whitespace-nowrap"><p>Log-out</p></div>
                 </div>
             </div>
-<<<<<<< HEAD
-=======
 
             {notificationOpen && (
                 <div className='absolute right-6 top-16 z-50 w-[360px] max-h-[400px] overflow-y-auto rounded-xl border border-gray-700 bg-[#121a2e] p-3 shadow-2xl'>
@@ -123,10 +101,9 @@ const StudentNavbar = () => {
                     )}
                 </div>
             )}
->>>>>>> ra_new_part
-            {/* ConfirmModal */}
             <ConfirmModal show={confirmOpen} message="Are you sure you want to logout?"
-                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>            
+                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>     
+
         </div>
     )
 }

@@ -93,6 +93,14 @@ export const signin = async (req, res) => {
             });
         }
 
+        if (u_role && String(u_role).toLowerCase() !== "student") {
+            return res.status(400).json({
+                message: "Only student registration is allowed from this form",
+                code: "INVALID_ROLE",
+                accountExists: false,
+            });
+        }
+
         if (normalizedCourse.length > 80 || normalizedFaculty.length > 80) {
             return res.status(400).json({
                 message: "Faculty and course must be 80 characters or fewer",
@@ -164,7 +172,7 @@ export const signin = async (req, res) => {
             u_name: normalizedName,
             u_email: normalizedEmail,
             u_password: hashedPassword,
-            u_role: u_role || "student",
+            u_role: "student",
             u_regno: normalizedRegNo,
             u_faculty: normalizedFaculty || null,
             u_course: normalizedCourse || pendingStudent.u_course || null,

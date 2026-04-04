@@ -3,17 +3,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaFileUpload, FaSave, FaChartBar, FaArrowLeft, FaEye, FaExclamationTriangle, FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import API from "../../api";
+import { useAuth } from "../../context/AuthContext";
 
 const emptyForm = {
   subjectName: "",
   subjectCode: "",
   assessmentName: "",
   maxMarks: "",
+  semester: "1",
+  batchId: "",
 };
 
 const AddMarks = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [form, setForm] = useState(emptyForm);
   const [file, setFile] = useState(null);
@@ -22,8 +26,10 @@ const AddMarks = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [batches, setBatches] = useState([]);
 
   const isEdit = useMemo(() => Boolean(id), [id]);
+  const isLecturer = user?.u_role === "lecturer";
 
   useEffect(() => {
     const loadExisting = async () => {
@@ -39,6 +45,8 @@ const AddMarks = () => {
           subjectCode: data.subjectCode || "",
           assessmentName: data.assessmentName || "",
           maxMarks: data.maxMarks ?? "",
+          semester: String(data.semester || "1"),
+          batchId: data.batchId || data.batch?._id || "",
         });
 
         setPreviewRows(data.rows || []);
@@ -61,6 +69,21 @@ const AddMarks = () => {
     loadExisting();
   }, [id, isEdit]);
 
+  useEffect(() => {
+    const loadBatches = async () => {
+      if (!isLecturer) return;
+
+      try {
+        const res = await API.get("/batches");
+        setBatches(res.data?.batches || []);
+      } catch (_err) {
+        setBatches([]);
+      }
+    };
+
+    loadBatches();
+  }, [isLecturer]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -76,6 +99,8 @@ const AddMarks = () => {
     fd.append("subjectCode", form.subjectCode);
     fd.append("assessmentName", form.assessmentName);
     fd.append("maxMarks", form.maxMarks);
+    if (isLecturer) fd.append("semester", form.semester);
+    if (form.batchId) fd.append("batchId", form.batchId);
     if (file) fd.append("file", file);
     return fd;
   };
@@ -83,6 +108,11 @@ const AddMarks = () => {
   const handlePreview = async () => {
     if (!file && !isEdit) {
       toast.error("Please choose an Excel/CSV file first.");
+      return;
+    }
+
+    if (isLecturer && !form.batchId) {
+      toast.error("Please select a batch before previewing marks.");
       return;
     }
 
@@ -112,6 +142,11 @@ const AddMarks = () => {
 
     if (!form.subjectName || !form.subjectCode || !form.assessmentName || !form.maxMarks) {
       toast.error("Please fill all required fields.");
+      return;
+    }
+
+    if (isLecturer && !form.batchId) {
+      toast.error("Please select a batch before saving marks.");
       return;
     }
 
@@ -180,6 +215,40 @@ const AddMarks = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {isLecturer && (
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Batch</label>
+                    <select
+                      name="batchId"
+                      value={form.batchId}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-gray-700 bg-[#0f1419] px-4 py-3 text-white outline-none transition focus:border-blue-500"
+                    >
+                      <option value="">Select a batch</option>
+                      {batches.map((batch) => (
+                        <option key={batch._id} value={batch._id}>
+                          {batch.name || batch.batchCode || batch._id}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {isLecturer && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Semester</label>
+                    <select
+                      name="semester"
+                      value={form.semester}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border border-gray-700 bg-[#0f1419] px-4 py-3 text-white outline-none transition focus:border-blue-500"
+                    >
+                      <option value="1">Semester 1</option>
+                      <option value="2">Semester 2</option>
+                    </select>
+                  </div>
+                )}
+
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">Subject Name</label>
                   <input

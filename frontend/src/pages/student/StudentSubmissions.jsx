@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaCloudUploadAlt, FaExternalLinkAlt, FaFileUpload, FaInfo, FaEye } from 'react-icons/fa';
 import API from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const StudentSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -14,6 +15,8 @@ const StudentSubmissions = () => {
   const [openedSubmissionIds, setOpenedSubmissionIds] = useState({});
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [detailsSubmission, setDetailsSubmission] = useState(null);
+  const { user } = useAuth();
+  const canUpload = user?.u_role === 'student';
 
   const fetchData = async () => {
     try {
@@ -59,6 +62,7 @@ const StudentSubmissions = () => {
   };
 
   const openUploadModal = (submission) => {
+    if (!canUpload) return;
     setSelectedSubmission(submission);
     setSelectedFile(null);
     setComment('');
@@ -70,11 +74,13 @@ const StudentSubmissions = () => {
   const openDetailsModal = (submission) => {
     setDetailsSubmission(submission);
     setIsDetailsModalOpen(true);
-    markSubmissionOpen(submission._id);
+    if (canUpload) {
+      markSubmissionOpen(submission._id);
+    }
   };
 
   const markSubmissionOpen = async (submissionId) => {
-    if (!submissionId || openedSubmissionIds[submissionId]) return;
+    if (!submissionId || openedSubmissionIds[submissionId] || !canUpload) return;
 
     try {
       await API.post(`/submissions/${submissionId}/open`);
@@ -86,6 +92,11 @@ const StudentSubmissions = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    if (!canUpload) {
+      setUploadMessage('Lecturers can view submissions only.');
+      return;
+    }
+
     if (!selectedSubmission || !selectedFile) {
       setUploadMessage('Please select a file first');
       return;
@@ -119,7 +130,9 @@ const StudentSubmissions = () => {
     <div className='p-6 space-y-6'>
       <section className='rounded-2xl border border-gray-700 bg-[#1a1f2e] p-5'>
         <h2 className='text-xl font-bold text-white'>My Submission Upload Page</h2>
-        <p className='mt-1 text-sm text-gray-400'>Open each submission and upload your file before due date.</p>
+        <p className='mt-1 text-sm text-gray-400'>
+          {canUpload ? 'Open each submission and upload your file before due date.' : 'Lecture view mode: review submissions without uploading files.'}
+        </p>
       </section>
 
       <section className='rounded-2xl border border-gray-700 bg-[#1a1f2e] p-5'>
@@ -168,10 +181,11 @@ const StudentSubmissions = () => {
 
                         <button
                           onClick={() => openUploadModal(item)}
-                          className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 px-3 py-2 text-xs text-blue-300 hover:bg-blue-500/30'
+                          disabled={!canUpload}
+                          className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 px-3 py-2 text-xs text-blue-300 hover:bg-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50'
                         >
                           <FaFileUpload />
-                          {upload ? 'Re-Upload' : 'Upload'}
+                          {canUpload ? (upload ? 'Re-Upload' : 'Upload') : 'View Only'}
                         </button>
 
                         {upload?.fileUrl && (

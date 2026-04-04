@@ -1,81 +1,72 @@
 import dotenv from "dotenv";
+import { pathToFileURL } from "url";
+
 dotenv.config();
+
 import bcrypt from "bcryptjs";
-import User from './models/User.js'
-<<<<<<< HEAD
-=======
-import Rep from './models/Rep.js'
->>>>>>> ra_new_part
+import User from "./models/User.js";
+import Rep from "./models/Rep.js";
 import { connectDB } from "./db/db.js";
 
-const seedUsers = async () => {
-    await connectDB();
-<<<<<<< HEAD
-=======
+export const seedUsers = async ({ ensureConnection = true } = {}) => {
+    if (ensureConnection) {
+        await connectDB();
+    }
 
->>>>>>> ra_new_part
-    const users = [
-        {
-            u_name: "Admin User",
-            u_email: "admin@example.com",
-            u_password: await bcrypt.hash("admin123", 10),
-            u_role: "admin",
-<<<<<<< HEAD
-        },
-        {
-            u_name: "Batch rep",
-            u_email: "brep1@example.com",
-            u_password: await bcrypt.hash("brep1", 10),
-            u_role: "batchrep",
-            isBatchRep: true,
-=======
-        }
-    ];
+    const adminUser = {
+        u_name: "Admin User",
+        u_email: "admin@example.com",
+        u_password: await bcrypt.hash("admin123", 10),
+        u_role: "admin"
+    };
 
-    const reps = [
-        {
-            r_name: "Batch rep",
-            r_email: "brep1@example.com",
-            r_password: await bcrypt.hash("brep1", 10),
-            r_role: "batchrep",
-            isBatchRep: true,
-            u_batchId: "69c42b2978b1a37cbbd3392e"
->>>>>>> ra_new_part
-        },        
-        
+    const lecturerUser = {
+        u_name: "Lecture User",
+        u_email: "lecture@example.com",
+        u_password: await bcrypt.hash("lecture123", 10),
+        u_role: "lecturer",
+        u_faculty: "Computing",
+        u_course: "Academic Affairs",
+        u_year: 1,
+        u_semester: 1,
+    };
 
-    ];
-    
+    const batchRep = {
+        r_name: "Batch rep",
+        r_email: "brep1@example.com",
+        r_password: await bcrypt.hash("brep1", 10),
+        r_role: "batchrep",
+        isBatchRep: true
+    };
+
     try {
-<<<<<<< HEAD
-        await User.deleteMany({});
-        await User.insertMany(users);
-        console.log("Users seeded successfully");
-=======
-        for (const user of users) {
-            await User.updateOne(
-                { u_email: user.u_email },
-                { $set: user },
-                { upsert: true }
-            );
-        }
+        await User.updateOne(
+            { u_email: adminUser.u_email },
+            { $set: adminUser },
+            { upsert: true }
+        );
 
-        for (const rep of reps) {
-            await Rep.updateOne(
-                { r_email: rep.r_email },
-                { $set: rep },
-                { upsert: true }
-            );
-        }
+        await User.updateOne(
+            { u_email: lecturerUser.u_email },
+            { $set: lecturerUser },
+            { upsert: true }
+        );
+
+        await Rep.updateOne(
+            { r_email: batchRep.r_email },
+            { $set: batchRep },
+            { upsert: true }
+        );
 
         console.log("Users and reps seeded successfully");
->>>>>>> ra_new_part
-        process.exit();
-    }
-    catch (err) {
+    } catch (err) {
         console.error("Seeding error:", err);
-        process.exit(1);
+        throw err;
     }
 };
 
-seedUsers(); 
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    seedUsers()
+        .then(() => process.exit(0))
+        .catch(() => process.exit(1));
+}

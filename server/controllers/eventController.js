@@ -150,7 +150,7 @@ export const getEvents = async (req, res) => {
     // role-based visibility
     if (role === "student" || role === "batchrep") {
       if (myBatchId) filter.batch = myBatchId;
-    } else if (role === "admin") {
+    } else if (role === "admin" || role === "lecturer") {
       if (batchId) filter.batch = batchId;
     }
 

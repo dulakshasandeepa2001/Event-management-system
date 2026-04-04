@@ -3,11 +3,11 @@ import XLSX from "xlsx";
 import Marks from "../models/Marks.js";
 import User from "../models/User.js";
 
-const getBatchId = (user) =>
-  user?.u_batchId || user?.batchId || user?.batch || user?.u_batch || "";
+const getBatchId = (user, source = {}) =>
+  user?.u_batchId || user?.batchId || user?.batch || user?.u_batch || source?.batchId || source?.batch || source?.u_batch || "";
 
 const getSemester = (user, body) =>
-  user?.u_semester || user?.semester || body?.semester || "";
+  body?.semester || body?.semesterId || (user?.u_semester || user?.semester || "");
 
 const getUserId = (user) => user?._id || user?.id || "";
 
@@ -178,7 +178,7 @@ const parseAndValidateRows = async ({ file, maxMarks, batchId }) => {
 
 export const previewMarksUpload = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
+    const batchId = getBatchId(req.user, req.body);
     if (!batchId) {
       return res.status(400).json({ message: "Batch information not found for logged-in user." });
     }
@@ -228,7 +228,7 @@ export const previewMarksUpload = async (req, res) => {
 
 export const createMarksUpload = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
+    const batchId = getBatchId(req.user, req.body);
     if (!batchId) {
       return res.status(400).json({ message: "Batch information not found for logged-in user." });
     }
@@ -297,13 +297,18 @@ export const createMarksUpload = async (req, res) => {
 
 export const listMarks = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
-    if (!batchId) {
-      return res.status(400).json({ message: "Batch information not found for logged-in user." });
-    }
+    const batchId = getBatchId(req.user, req.query);
 
     const semester = getSemester(req.user, req.body);
-    const filter = semester ? { batchId, semester } : { batchId };
+    const filter = {};
+
+    if (batchId) {
+      filter.batchId = batchId;
+    }
+
+    if (semester) {
+      filter.semester = semester;
+    }
 
     const marks = await Marks.find(filter)
       .sort({ createdAt: -1 })
@@ -330,11 +335,14 @@ export const listMarks = async (req, res) => {
 
 export const getMarksById = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
-    const item = await Marks.findOne({
-      _id: req.params.id,
-      batchId,
-    }).lean();
+    const batchId = getBatchId(req.user, req.query);
+    const query = { _id: req.params.id };
+
+    if (batchId) {
+      query.batchId = batchId;
+    }
+
+    const item = await Marks.findOne(query).lean();
 
     if (!item) {
       return res.status(404).json({ message: "Marks record not found." });
@@ -352,18 +360,23 @@ export const getMarksById = async (req, res) => {
 
 export const updateMarksUpload = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
-    if (!batchId) {
-      return res.status(400).json({ message: "Batch information not found for logged-in user." });
+    const batchId = getBatchId(req.user, req.body);
+    const query = { _id: req.params.id };
+
+    if (batchId) {
+      query.batchId = batchId;
     }
 
-    const existing = await Marks.findOne({
-      _id: req.params.id,
-      batchId,
-    });
+    const existing = await Marks.findOne(query);
 
     if (!existing) {
       return res.status(404).json({ message: "Marks record not found." });
+    }
+
+    const validationBatchId = batchId || existing.batchId;
+
+    if (!validationBatchId) {
+      return res.status(400).json({ message: "Batch information not found for logged-in user." });
     }
 
     const semester = getSemester(req.user, req.body) || existing.semester;
@@ -390,7 +403,7 @@ export const updateMarksUpload = async (req, res) => {
       const parsed = await parseAndValidateRows({
         file: req.file,
         maxMarks: parsedMaxMarks,
-        batchId,
+        batchId: validationBatchId,
       });
 
       rows = parsed.validRows;
@@ -441,12 +454,15 @@ export const updateMarksUpload = async (req, res) => {
 
 export const deleteMarksUpload = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
+    const batchId = getBatchId(req.user, req.query);
 
-    const deleted = await Marks.findOneAndDelete({
-      _id: req.params.id,
-      batchId,
-    });
+    const query = { _id: req.params.id };
+
+    if (batchId) {
+      query.batchId = batchId;
+    }
+
+    const deleted = await Marks.findOneAndDelete(query);
 
     if (!deleted) {
       return res.status(404).json({ message: "Marks record not found." });
@@ -512,19 +528,22 @@ export const getStudentMarks = async (req, res) => {
 
 export const getStudentMarkById = async (req, res) => {
   try {
-    const batchId = getBatchId(req.user);
-    const studentId = normalize(
-      req.user.u_regno || req.user.studentId || req.user.student_id || req.user.regNo
-    );
+    const batchId = getBatchId(req.user, req.query);
+    const query = { _id: req.params.id };
 
-    const item = await Marks.findOne({
-      _id: req.params.id,
-      batchId,
-    }).lean();
+    if (batchId) {
+      query.batchId = batchId;
+    }
+
+    const item = await Marks.findOne(query).lean();
 
     if (!item) {
       return res.status(404).json({ message: "Marks record not found." });
     }
+
+    const studentId = normalize(
+      req.user.u_regno || req.user.studentId || req.user.student_id || req.user.regNo
+    );
 
     const row = item.rows.find((r) => normalize(r.studentId) === studentId);
 

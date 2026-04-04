@@ -31,6 +31,10 @@ const canViewEvent = (user, event) => {
     return { ok: true };
   }
 
+  if (user.u_role === "lecturer") {
+    return { ok: true };
+  }
+
   if (user.u_role === "student" || user.u_role === "batchrep") {
     const myBatchId = getUserBatchId(user);
     const eventBatchId = event.batch?._id?.toString() || event.batch?.toString();
@@ -125,7 +129,7 @@ export const getEventDetails = async (req, res) => {
       myRating: myRating?.rating || null,
     };
 
-    if (user.u_role === "admin" || user.u_role === "batchrep") {
+    if (user.u_role === "admin" || user.u_role === "batchrep" || user.u_role === "lecturer") {
       const registrations = await EventRegistration.find({ event: event._id })
         .populate("user", "u_name u_regno u_course u_batchCode u_batchId u_role")
         .sort({ createdAt: -1 })

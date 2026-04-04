@@ -177,7 +177,19 @@ export const setStudentManualInactive = async (req, res) => {
     const { id } = req.params;
     if (!req.user || req.user.u_role !== "admin") return res.status(403).json({ message: "Forbidden" });
     const { manualInactive } = req.body;
-    const student = await User.findByIdAndUpdate(id, { $set: { u_manualInactive: !!manualInactive, u_isActive: manualInactive ? false : (student?.u_isActive ?? true) } }, { new: true });
+    const currentStudent = await User.findById(id).select("u_isActive").lean();
+    if (!currentStudent) return res.status(404).json({ message: "Student not found" });
+
+    const student = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          u_manualInactive: !!manualInactive,
+          u_isActive: manualInactive ? false : (currentStudent.u_isActive ?? true),
+        },
+      },
+      { new: true }
+    );
     if (!student) return res.status(404).json({ message: "Student not found" });
     return res.status(200).json({ student });
   } catch (err) {

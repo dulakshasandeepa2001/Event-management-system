@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-import React, { useEffect, useState, useMemo } from 'react'
-import axios from 'axios'
-
-import { FaCheckCircle, FaFileAlt, FaMoneyBillWave, FaBuilding, FaDownload,
-  FaHourglassHalf, FaTimesCircle, FaUsers, FaCalendarAlt, FaBell, FaUserTie } from 'react-icons/fa'
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend as ReLegend,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area } from 'recharts';
-
-const BatchrepSummary = () => {
-
-   return (
-      <div>
-         <div className='bg-black justify-between flex p-1 px-6'>
-            <p className='my_font_family font-bold text-white'>Dashboard Overview</p>
-            <div id='bt_section' className='relative'>
-               <button className="p-1 bg-black text-orange-500 border-2 rounded-full"> <FaBell/> </button>
-               <div className='absolute flex -top-1 -right-1 p-1 items-center justify-center text-white font-bold bg-red-600 h-5 rounded-full'>
-                  <p className="text-xs">{0}</p>
-               </div>
-               <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-1 border-2 border-black bg-white z-50">
-                  <p>Notifications</p>
-               </div>
-            </div>
-         </div>
-      </div>
-
-   );
-};
-
-export default BatchrepSummary;
-=======
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
@@ -59,6 +27,7 @@ import {
   FaPlus,
 } from 'react-icons/fa';
 import API from '../../api';
+import { useTheme } from '../../context/ThemeContext.jsx';
 
 const initialForm = {
   d_title: '',
@@ -120,16 +89,17 @@ const deviceTrend = [
 ];
 
 const BatchrepSummary = () => {
+  const { isDarkTheme } = useTheme();
   const [deadlines, setDeadlines] = useState([]);
   const [formData, setFormData] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
-  const [isDeadlineModalOpen, setIsDeadlineModalOpen] = useState(false);
+  const [isDeadlineModalOpen, setIsDeadlineModalOpen] = useState(false);        
   const [loadingDeadlines, setLoadingDeadlines] = useState(false);
   const [formMessage, setFormMessage] = useState('');
   const [submissions, setSubmissions] = useState([]);
   const [submissionFormData, setSubmissionFormData] = useState(initialSubmissionForm);
   const [editingSubmissionId, setEditingSubmissionId] = useState(null);
-  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);    
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissionMessage, setSubmissionMessage] = useState('');
   const minDueDate = new Date().toISOString().split('T')[0];
@@ -218,15 +188,15 @@ const BatchrepSummary = () => {
 
     const normalizedTitle = formData.d_title.trim();
     const normalizedSubject = formData.d_subject.trim();
-    const normalizedDescription = formData.d_description.trim();
+    const normalizedDescription = formData.d_description.trim();      
     const normalizedCourse = formData.d_course.trim();
 
     if (normalizedTitle.length < 3 || normalizedTitle.length > 120) {
-      setFormMessage('Deadline title must be between 3 and 120 characters');
+      setFormMessage('Deadline title must be between 3 and 120 characters');    
       return;
     }
 
-    if (normalizedSubject.length < 2 || normalizedSubject.length > 80) {
+    if (normalizedSubject.length < 2 || normalizedSubject.length > 80) {        
       setFormMessage('Subject must be between 2 and 80 characters');
       return;
     }
@@ -267,7 +237,7 @@ const BatchrepSummary = () => {
       resetForm();
       setIsDeadlineModalOpen(false);
     } catch (err) {
-      setFormMessage(err.response?.data?.message || 'Failed to save deadline');
+      setFormMessage(err.response?.data?.message || 'Failed to save deadline'); 
     }
   };
 
@@ -297,7 +267,7 @@ const BatchrepSummary = () => {
 
     const normalizedTitle = submissionFormData.s_title.trim();
     const normalizedModule = submissionFormData.s_module.trim();
-    const normalizedDescription = submissionFormData.s_description.trim();
+    const normalizedDescription = submissionFormData.s_description.trim();      
     const normalizedCourse = submissionFormData.s_course.trim();
 
     if (normalizedTitle.length < 3 || normalizedTitle.length > 120) {
@@ -306,7 +276,7 @@ const BatchrepSummary = () => {
     }
 
     if (normalizedModule.length < 2 || normalizedModule.length > 80) {
-      setSubmissionMessage('Module must be between 2 and 80 characters');
+      setSubmissionMessage('Module must be between 2 and 80 characters');       
       return;
     }
 
@@ -316,7 +286,7 @@ const BatchrepSummary = () => {
     }
 
     if (normalizedDescription.length > 1000) {
-      setSubmissionMessage('Description must be 1000 characters or fewer');
+      setSubmissionMessage('Description must be 1000 characters or fewer');     
       return;
     }
 
@@ -451,11 +421,11 @@ const BatchrepSummary = () => {
           <button className='rounded-xl border border-cyan-300/20 bg-[#101d3f] px-3 py-1.5 text-xs text-slate-300'>Daily</button>
         </div>
 
-        <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-5'>
+        <div className={isDarkTheme ? 'grid gap-3 sm:grid-cols-2 xl:grid-cols-5' : 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3'}>
           {riskCards.map((card) => (
             <article
               key={card.title}
-              className='rounded-xl border border-cyan-300/10 bg-[#0d1734] p-3'
+              className='rounded-xl border border-cyan-300/10 bg-[#0d1734] p-3' 
             >
               <div className='mb-3 flex items-center justify-between'>
                 <div className={`grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br ${card.color} text-cyan-100`}>
@@ -464,7 +434,7 @@ const BatchrepSummary = () => {
                 <span className='text-slate-500'>•••</span>
               </div>
               <h3 className='text-3xl font-bold text-slate-100'>{card.value}</h3>
-              <p className='mt-1 text-xs text-slate-400'>{card.title}</p>
+              <p className='mt-1 text-xs text-slate-400'>{card.title}</p>       
             </article>
           ))}
         </div>
@@ -529,11 +499,11 @@ const BatchrepSummary = () => {
             <div className='absolute inset-0 grid place-items-center text-center'>
               <div>
                 <p className='text-xs text-slate-400'>Score</p>
-                <p className='text-4xl font-bold text-slate-100'>824</p>
+                <p className='text-4xl font-bold text-slate-100'>824</p>        
               </div>
             </div>
           </div>
-          <div className='mt-2 flex justify-between text-xs text-slate-400'>
+          <div className='mt-2 flex justify-between text-xs text-slate-400'>    
             <span>0</span>
             <span>1000</span>
           </div>
@@ -554,7 +524,7 @@ const BatchrepSummary = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <ul className='grid grid-cols-2 gap-2 text-xs text-slate-300'>
+          <ul className='grid grid-cols-2 gap-2 text-xs text-slate-300'>        
             {virusBreakdown.map((entry) => (
               <li key={entry.name} className='flex items-center gap-2'>
                 <span className='h-2.5 w-2.5 rounded-full' style={{ backgroundColor: entry.color }} />
@@ -574,8 +544,8 @@ const BatchrepSummary = () => {
             <ResponsiveContainer width='100%' height='100%'>
               <AreaChart data={deviceTrend}>
                 <defs>
-                  <linearGradient id='deviceArea' x1='0' y1='0' x2='0' y2='1'>
-                    <stop offset='0%' stopColor='#22d3ee' stopOpacity={0.4} />
+                  <linearGradient id='deviceArea' x1='0' y1='0' x2='0' y2='1'>  
+                    <stop offset='0%' stopColor='#22d3ee' stopOpacity={0.4} />  
                     <stop offset='100%' stopColor='#22d3ee' stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
@@ -603,7 +573,7 @@ const BatchrepSummary = () => {
           <div className='flex items-center gap-2'>
             <button
               onClick={openCreateModal}
-              className='inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-[#10355b] px-3 py-2 text-xs text-cyan-100 hover:bg-[#124267]'
+              className='inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-[#10355b] px-3 py-2 text-xs text-cyan-100 hover:bg-[#124267]'   
             >
               <FaPlus />
               Create Deadline
@@ -670,7 +640,7 @@ const BatchrepSummary = () => {
           <div className='flex items-center gap-2'>
             <button
               onClick={openCreateSubmissionModal}
-              className='inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-[#10355b] px-3 py-2 text-xs text-cyan-100 hover:bg-[#124267]'
+              className='inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-[#10355b] px-3 py-2 text-xs text-cyan-100 hover:bg-[#124267]'   
             >
               <FaPlus />
               Create Submission
@@ -719,7 +689,7 @@ const BatchrepSummary = () => {
                       <button onClick={() => handleEditSubmission(row)} className='rounded-md bg-cyan-500/20 p-2 text-cyan-200 hover:bg-cyan-500/30'>
                         <FaEdit />
                       </button>
-                      <button onClick={() => handleDeleteSubmission(row._id)} className='rounded-md bg-rose-500/20 p-2 text-rose-200 hover:bg-rose-500/30'>
+                      <button onClick={() => handleDeleteSubmission(row._id)} className='rounded-md bg-rose-500/20 p-2 text-rose-200 hover:bg-rose-500/30'>     
                         <FaTrash />
                       </button>
                     </div>
@@ -752,10 +722,10 @@ const BatchrepSummary = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitDeadline} className='space-y-3'>
+            <form onSubmit={handleSubmitDeadline} className='space-y-3'>        
               <div className='grid gap-3 md:grid-cols-2'>
-                <input name='d_title' value={formData.d_title} onChange={handleFormChange} placeholder='Deadline title' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />
-                <input name='d_subject' value={formData.d_subject} onChange={handleFormChange} placeholder='Subject' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />
+                <input name='d_title' value={formData.d_title} onChange={handleFormChange} placeholder='Deadline title' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required /> 
+                <input name='d_subject' value={formData.d_subject} onChange={handleFormChange} placeholder='Subject' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />    
 
                 <select name='d_year' value={formData.d_year} onChange={handleFormChange} className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required>
                   {yearOptions.map((year) => (
@@ -768,7 +738,7 @@ const BatchrepSummary = () => {
                   <option value='2'>Semester 2</option>
                 </select>
 
-                <input name='d_course' value={formData.d_course} onChange={handleFormChange} placeholder='Course (optional)' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' />
+                <input name='d_course' value={formData.d_course} onChange={handleFormChange} placeholder='Course (optional)' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' />     
                 <input name='d_dueDate' type='date' min={minDueDate} value={formData.d_dueDate} onChange={handleFormChange} className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />
               </div>
 
@@ -816,7 +786,7 @@ const BatchrepSummary = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitSubmission} className='space-y-3'>
+            <form onSubmit={handleSubmitSubmission} className='space-y-3'>      
               <div className='grid gap-3 md:grid-cols-2'>
                 <input name='s_title' value={submissionFormData.s_title} onChange={handleSubmissionFormChange} placeholder='Submission title' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />
                 <input name='s_module' value={submissionFormData.s_module} onChange={handleSubmissionFormChange} placeholder='Module' className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required />
@@ -827,7 +797,7 @@ const BatchrepSummary = () => {
                   ))}
                 </select>
 
-                <select name='s_semester' value={submissionFormData.s_semester} onChange={handleSubmissionFormChange} className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required>
+                <select name='s_semester' value={submissionFormData.s_semester} onChange={handleSubmissionFormChange} className='rounded-lg border border-cyan-300/15 bg-[#101d3f] px-3 py-2 text-sm text-slate-100 outline-none' required>     
                   <option value='1'>Semester 1</option>
                   <option value='2'>Semester 2</option>
                 </select>
@@ -865,4 +835,3 @@ const BatchrepSummary = () => {
 };
 
 export default BatchrepSummary;
->>>>>>> ra_new_part

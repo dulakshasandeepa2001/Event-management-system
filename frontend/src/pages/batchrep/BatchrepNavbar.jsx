@@ -1,50 +1,21 @@
-import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
-import { FaUser, FaPowerOff } from "react-icons/fa";
+import React, { useEffect } from "react";
+import { FaUserCircle, FaBell, FaSearch, FaCommentAlt } from "react-icons/fa";  
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import ConfirmModal from "../components/ConfirmModal";
-
-const BatchrepNavbar = () => {
-
-  const { user, logout, loading } = useAuth();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-=======
-import { FaUserCircle, FaBell, FaSearch, FaCommentAlt } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import ThemeToggleButton from "../../components/ThemeToggleButton.jsx";
 
 const BatchrepNavbar = () => {
 
   const { user, loading } = useAuth();
->>>>>>> ra_new_part
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [user, loading, navigate]);
 
-  if (loading) return null; // or spinner
+  if (loading) return null;
 
     return (
-<<<<<<< HEAD
-        <div className='flex justify-between items-center bg-gray-800 h-14 px-6 my_font_family'>
-            <div className='flex items-center text-white space-x-2'>
-                <FaUser/>
-                <h3 className="text-white">Welcome {user?.u_name}</h3>
-            </div>
-            <div>
-                <div id='bt_section' className='relative'>
-                    <button className="p-1 bg-black text-red-500 border-2 rounded-full" onClick={() => setConfirmOpen(true)}> <FaPowerOff/> </button>
-                    <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-1 border-2 border-black bg-white z-50"><p>Log-out</p></div>
-                </div>
-            </div>
-            {/* ConfirmModal */}
-            <ConfirmModal show={confirmOpen} message="Are you sure you want to logout?"
-                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>            
-        </div>
-=======
         <header className='sticky top-0 z-20 border-b border-cyan-400/10 bg-[#050b18]/90 px-4 py-3 backdrop-blur md:px-6 lg:px-8'>
             <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
                 <div className='flex items-center gap-3'>
@@ -56,6 +27,7 @@ const BatchrepNavbar = () => {
                 </div>
 
                 <div className='flex items-center gap-2 md:gap-3'>
+                    <ThemeToggleButton variant='compact' />
                     <label className='flex min-w-[180px] flex-1 items-center gap-2 rounded-full border border-cyan-300/15 bg-[#0e1630] px-3 py-2 md:min-w-[320px]'>
                         <FaSearch className='text-slate-400' />
                         <input
@@ -65,7 +37,7 @@ const BatchrepNavbar = () => {
                         />
                     </label>
 
-                    <button className='grid h-9 w-9 place-items-center rounded-full border border-cyan-300/15 bg-[#0d1530] text-slate-300 hover:text-cyan-200'>
+                    <button className='grid h-9 w-9 place-items-center rounded-full border border-cyan-300/15 bg-[#0d1530] text-slate-300 hover:text-cyan-200'> 
                         <FaCommentAlt />
                     </button>
                     <button className='relative grid h-9 w-9 place-items-center rounded-full border border-cyan-300/15 bg-[#0d1530] text-slate-300 hover:text-cyan-200'>
@@ -75,7 +47,6 @@ const BatchrepNavbar = () => {
                 </div>
             </div>
         </header>
->>>>>>> ra_new_part
     )
 }
 

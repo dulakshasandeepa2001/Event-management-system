@@ -42,15 +42,6 @@ const BatchView = () => {
     if (!id) return;
     setLoading(true);
     try {
-<<<<<<< HEAD
-      const res = await API.get(`/batch/${id}`);
-      // backend returns { batch, students, studentCount, activeCount }
-      setBatch(res.data.batch || null);
-      setStudents(res.data.students || []);
-    } catch (err) {
-      console.error("Failed to load batch:", err);
-      toast.error("Failed to load batch");
-=======
       // Fetch batch details
       const batchRes = await API.get(`/batch/${id}`);
       const batchData = batchRes.data.batch || null;
@@ -58,16 +49,16 @@ const BatchView = () => {
       console.log('✅ Batch loaded:', batchData?.name, 'ID:', id);
 
       // Fetch students by batchId
-      console.log('🔵 Fetching students from /students with batchId=' + id);
+      console.log('🔵 Fetching students from /students with batchId=' + id);    
       const studentsRes = await API.get(`/students?limit=100&skip=0&batchId=${id}`);
       console.log('🟢 Students response:', studentsRes.data);
-      
+
       if (studentsRes.data && studentsRes.data.students && studentsRes.data.students.length > 0) {
         setStudents(studentsRes.data.students);
         console.log('✅ Found:', studentsRes.data.students.length, 'students in batch');
       } else {
-        console.warn('⚠️ No students found for this batchId, trying course-based fetch...');
-        
+        console.warn('⚠️ No students found for this batchId, trying course-basedd fetch...');
+
         // Fallback: fetch by course name if batchId returned nothing
         if (batchData?.course) {
           const courseRes = await API.get(`/students?limit=100&skip=0&course=${encodeURIComponent(batchData.course)}`);
@@ -84,10 +75,9 @@ const BatchView = () => {
       }
     } catch (err) {
       console.error("❌ Failed to load batch:", err);
-      console.error('Error details:', err.response?.data || err.message);
+      console.error('Error details:', err.response?.data || err.message);       
       toast.error("Failed to load batch");
       setStudents([]);
->>>>>>> ra_new_part
     } finally {
       setLoading(false);
     }
@@ -97,7 +87,7 @@ const BatchView = () => {
     fetchBatch();
   }, [fetchBatch]);
 
-  /* ---------- Actions: activate / deactivate / delete / edit ---------- */
+  /* ---------- Actions: activate / deactivate / delete / edit ---------- */    
   const openConfirm = (action) => {
     setConfirmAction(action);
     setConfirmOpen(true);
@@ -184,7 +174,7 @@ const BatchView = () => {
   };
 
   const doPreviewUpload = async () => {
-    if (!uploadFile || !batch) return toast.error("Select a file and batch");
+    if (!uploadFile || !batch) return toast.error("Select a file and batch");   
     const form = new FormData();
     form.append("file", uploadFile);
     form.append("semester", 1);
@@ -201,7 +191,7 @@ const BatchView = () => {
   };
 
   const doApplyUpload = async () => {
-    if (!uploadFile || !batch) return toast.error("No preview to apply");
+    if (!uploadFile || !batch) return toast.error("No preview to apply");       
     setApplying(true);
     const form = new FormData();
     form.append("file", uploadFile);
@@ -212,24 +202,16 @@ const BatchView = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const s = res.data.summary || {};
-<<<<<<< HEAD
-      toast.success(`Upload applied — new: ${s.newCount || 0}, continuing: ${s.continuingCount || 0}, removed: ${s.removedCount || 0}`);
-      setPreview(null);
-      setPreviewOpen(false);
-      setUploadFile(null);
-      fetchBatch();
-=======
       toast.success(`✅ Upload applied — new: ${s.newCount || 0}, continuing: ${s.continuingCount || 0}, removed: ${s.removedCount || 0}`);
       setPreview(null);
       setPreviewOpen(false);
       setUploadFile(null);
-      
+
       // Wait a moment for database to write, then refresh
       setTimeout(() => {
         fetchBatch();
         toast.info("Student list refreshed");
       }, 500);
->>>>>>> ra_new_part
     } catch (err) {
       console.error("Apply error:", err);
       toast.error(err.response?.data?.message || "Apply failed");
@@ -244,7 +226,7 @@ const BatchView = () => {
       { name: "RegNo", selector: (r) => r.u_regno || "—", sortable: true, cell: (r) => <div className="font-medium">{r.u_regno || "—"}</div> },
       { name: "Name", selector: (r) => r.u_name || r.u_name, sortable: true, cell: (r) => <div>{r.u_name}</div> },
       { name: "Email", selector: (r) => r.u_email || "", sortable: true, cell: (r) => <div className="text-sm text-gray-700">{r.u_email}</div> },
-      { name: "Status", selector: (r) => (r.u_isActive ? "Active" : "Inactive"), sortable: true, cell: (r) => <div className={r.u_isActive ? "text-green-600 text-sm" : "text-red-600 text-sm"}>{r.u_isActive ? "Active" : "Inactive"}</div> },
+      { name: "Status", selector: (r) => (r.u_isActive ? "Active" : "Inactive"), sortable: true, cell: (r) => <div className={r.u_isActive ? "text-green-600 text-sm" : "text-red-600 text-sm"}>{r.u_isActive ? "Active" : "Inactive"}</div> }, 
     ],
     []
   );
@@ -267,11 +249,8 @@ const BatchView = () => {
             {batch?.isActive ? "Active" : "Deactivated"}
           </div>
 
-<<<<<<< HEAD
-=======
           <button onClick={fetchBatch} disabled={loading} className="px-3 py-1 border rounded hover:bg-gray-50" title="Refresh data"><FaSyncAlt className={loading ? "animate-spin" : ""} /></button>
 
->>>>>>> ra_new_part
           <button onClick={startEdit} className="px-3 py-1 border rounded hover:bg-gray-50" title="Edit batch"><FaEdit /></button>
 
           {batch?.isActive ? (
@@ -304,14 +283,14 @@ const BatchView = () => {
 
       {/* Upload area */}
       <div className="mb-6 p-4 bg-white rounded shadow-sm flex items-center gap-4">
-        <input type="file" accept=".xlsx,.xls,.csv" onChange={onFileChange} />
+        <input type="file" accept=".xlsx,.xls,.csv" onChange={onFileChange} />  
         <button onClick={doPreviewUpload} disabled={!uploadFile} className="px-3 py-1 flex items-center bg-green-600 text-white rounded hover:bg-green-700"><FaUpload className="mr-2"/> Preview</button>
         <div className="text-sm text-gray-500">Upload Excel to add/update students for this batch (preview before apply).</div>
       </div>
- 
+
       {/* Students table */}
       <div className="bg-white rounded shadow overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between">
+        <div className="p-4 border-b flex items-center justify-between">        
           <div className="font-semibold">Students</div>
           <div className="text-sm text-gray-500">{students.length} students</div>
         </div>
@@ -358,7 +337,7 @@ const BatchView = () => {
             : `Are you sure you want to permanently delete batch "${batch?.name}"?`
         }
         onConfirm={doConfirm}
-        onCancel={() => { setConfirmOpen(false); setConfirmAction(null); }}
+        onCancel={() => { setConfirmOpen(false); setConfirmAction(null); }}     
       />
 
       {/* Upload preview modal */}
@@ -366,7 +345,7 @@ const BatchView = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setPreviewOpen(false)} />
           <div className="relative z-10 w-full max-w-3xl bg-white rounded-lg shadow-lg overflow-auto p-6">
-            <h3 className="text-lg font-semibold mb-2">Upload Preview</h3>
+            <h3 className="text-lg font-semibold mb-2">Upload Preview</h3>      
             <p className="mb-2">Summary: new <strong>{preview.summary?.newCount || 0}</strong>, continuing <strong>{preview.summary?.continuingCount || 0}</strong>, removed <strong>{preview.summary?.removedCount || 0}</strong></p>
 
             {preview.errors && preview.errors.length > 0 && (
@@ -378,7 +357,7 @@ const BatchView = () => {
               </div>
             )}
 
-            <div className="max-h-64 overflow-auto border rounded p-2 mb-4">
+            <div className="max-h-64 overflow-auto border rounded p-2 mb-4">    
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left">

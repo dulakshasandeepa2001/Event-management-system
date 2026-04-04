@@ -32,7 +32,7 @@ export const submissionUploadMiddleware = upload.single("file");
 
 const canManageSubmissions = (user) => {
   if (!user) return false;
-  return user.u_role === "admin" || user.u_role === "batchrep" || !!user.isBatchRep;
+  return user.u_role === "admin" || user.u_role === "batchrep" || user.u_role === "lecturer" || !!user.isBatchRep;
 };
 
 const isBatchRepUser = (user) => user && (user.u_role === "batchrep" || !!user.isBatchRep);
