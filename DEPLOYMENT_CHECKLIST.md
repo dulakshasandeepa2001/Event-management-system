@@ -385,4 +385,4 @@ PUT /api/users/:id - Update user
 **Deployed By:** _______________  
 **Verified By:** _______________
 
-GIT_AUTHOR_DATE="2026-04-14T12:00:00" GIT_COMMITTER_DATE="2026-04-14T12:00:00" git commit -m " students ui make changes"
+GIT_AUTHOR_DATE="2026-04-16T12:00:00" GIT_COMMITTER_DATE="2026-04-16T12:00:00" git commit -m " lectures ui make changes"
