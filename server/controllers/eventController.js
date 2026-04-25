@@ -1,15 +1,52 @@
 import Event from "../models/Event.js";
 import Batch from "../models/Batch.js";
 import User from "../models/User.js";
+import Rep from "../models/Rep.js";
 
 const getUserBatchId = (userDoc) => {
   return (
+    userDoc?.u_batchId?.toString() ||
     userDoc?.batchId?.toString() ||
     userDoc?.u_batch?.toString() ||
     userDoc?.batch?.toString() ||
     userDoc?.assignedBatch?.toString() ||
     ""
   );
+};
+
+const getRequestAccountId = (user) => user?.id || user?._id?.toString() || user?._id || "";
+
+const normalizeRepAccount = (rep) => {
+  if (!rep) return null;
+
+  return {
+    ...rep,
+    _id: rep._id,
+    id: rep._id,
+    u_name: rep.r_name,
+    u_email: rep.r_email,
+    u_role: rep.r_role || "batchrep",
+    isBatchRep: true,
+    sourceModel: "Rep",
+  };
+};
+
+const getCurrentAccount = async (reqUser) => {
+  const accountId = getRequestAccountId(reqUser);
+  if (!accountId) return null;
+
+  if (reqUser?.sourceModel === "Rep" || reqUser?.isBatchRep) {
+    const rep = await Rep.findById(accountId).lean();
+    if (rep) return normalizeRepAccount(rep);
+  }
+
+  const user = await User.findById(accountId).lean();
+  if (user) return { ...user, sourceModel: "User" };
+
+  const rep = await Rep.findById(accountId).lean();
+  if (rep) return normalizeRepAccount(rep);
+
+  return null;
 };
 
 const normalizeTargetGroups = (targetGroups) => {
@@ -35,7 +72,7 @@ const normalizeTargetGroups = (targetGroups) => {
 };
 
 const canManageEvent = async (reqUser, eventBatchId = null) => {
-  const me = await User.findById(reqUser.id).lean();
+  const me = await getCurrentAccount(reqUser);
   if (!me) return { ok: false, status: 404, message: "User not found" };
 
   if (me.u_role === "admin") {
@@ -130,7 +167,7 @@ export const createEvent = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).lean();
+    const user = await getCurrentAccount(req.user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -185,13 +222,20 @@ export const getEventById = async (req, res) => {
     }
 
     const access = await canManageEvent(req.user, event.batch?._id || event.batch);
-    const user = await User.findById(req.user.id).lean();
+    const user = await getCurrentAccount(req.user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.u_role === "student" || user.u_role === "batchrep") {
+    if (user.u_role === "student") {
+      const myBatchId = getUserBatchId(user);
+      if (myBatchId && myBatchId !== event.batch?._id?.toString() && myBatchId !== event.batch?.toString()) {
+        return res.status(403).json({ message: "Not allowed to view this event" });
+      }
+    }
+
+    if (user.u_role === "batchrep") {
       const myBatchId = getUserBatchId(user);
       if (myBatchId && myBatchId !== event.batch?._id?.toString() && myBatchId !== event.batch?.toString()) {
         return res.status(403).json({ message: "Not allowed to view this event" });

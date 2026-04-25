@@ -102,24 +102,28 @@ const BatchrepSummary = () => {
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);    
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissionMessage, setSubmissionMessage] = useState('');
+  
+  // Dashboard metrics state
+  const [dashboardMetrics, setDashboardMetrics] = useState({
+    snapshot: { totalDeadlines: 0, dueThisWeek: 0, participants: 0, pendingApprovals: 0, noticesSent: 0 },
+    monthlyTrend: monthlyThreatData,
+    engagementScore: 0,
+    eventsByCategory: virusBreakdown,
+    weeklyAttendance: deviceTrend,
+  });
+  const [loadingMetrics, setLoadingMetrics] = useState(false);
+  
   const minDueDate = new Date().toISOString().split('T')[0];
 
   const riskCards = useMemo(() => {
-    const thisWeekCount = deadlines.filter((item) => {
-      const due = new Date(item.d_dueDate);
-      const now = new Date();
-      const diff = due.getTime() - now.getTime();
-      return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
-    }).length;
-
     return [
-      { title: 'Total Deadlines', value: String(deadlines.length), icon: <FaCalendarCheck />, color: 'from-fuchsia-500/30 to-fuchsia-600/10' },
-      { title: 'Due This Week', value: String(thisWeekCount), icon: <FaClipboardCheck />, color: 'from-violet-500/30 to-violet-600/10' },
-      { title: 'Participants', value: '240', icon: <FaUsers />, color: 'from-pink-500/30 to-pink-600/10' },
-      { title: 'Pending Approvals', value: '7', icon: <FaBug />, color: 'from-blue-500/30 to-blue-600/10' },
-      { title: 'Notices Sent', value: '66', icon: <FaBullhorn />, color: 'from-cyan-500/30 to-cyan-600/10' },
+      { title: 'Total Deadlines', value: String(dashboardMetrics.snapshot.totalDeadlines), icon: <FaCalendarCheck />, color: 'from-fuchsia-500/30 to-fuchsia-600/10' },
+      { title: 'Due This Week', value: String(dashboardMetrics.snapshot.dueThisWeek), icon: <FaClipboardCheck />, color: 'from-violet-500/30 to-violet-600/10' },
+      { title: 'Participants', value: String(dashboardMetrics.snapshot.participants), icon: <FaUsers />, color: 'from-pink-500/30 to-pink-600/10' },
+      { title: 'Pending Approvals', value: String(dashboardMetrics.snapshot.pendingApprovals), icon: <FaBug />, color: 'from-blue-500/30 to-blue-600/10' },
+      { title: 'Notices Sent', value: String(dashboardMetrics.snapshot.noticesSent), icon: <FaBullhorn />, color: 'from-cyan-500/30 to-cyan-600/10' },
     ];
-  }, [deadlines]);
+  }, [dashboardMetrics.snapshot]);
 
   const formatDate = (value) => {
     if (!value) return '-';
@@ -150,9 +154,31 @@ const BatchrepSummary = () => {
     }
   };
 
+  const fetchDashboardMetrics = async () => {
+    try {
+      setLoadingMetrics(true);
+      const res = await API.get('/dashboard');
+      if (res.data) {
+        setDashboardMetrics({
+          snapshot: res.data.snapshot || dashboardMetrics.snapshot,
+          monthlyTrend: res.data.monthlyTrend || monthlyThreatData,
+          engagementScore: res.data.engagementScore || 0,
+          eventsByCategory: res.data.eventsByCategory || virusBreakdown,
+          weeklyAttendance: res.data.weeklyAttendance || deviceTrend,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load dashboard metrics:', err);
+      // Keep using default data if API fails
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
   useEffect(() => {
     fetchDeadlines();
     fetchSubmissions();
+    fetchDashboardMetrics();
   }, []);
 
   const handleFormChange = (e) => {
@@ -414,27 +440,27 @@ const BatchrepSummary = () => {
   };
 
   return (
-    <div className='space-y-5'>
-      <section className='rounded-2xl border border-cyan-300/10 bg-[#09122a] p-4 md:p-5'>
-        <div className='mb-4 flex items-center justify-between'>
-          <h2 className='text-lg font-semibold text-slate-100'>Batch Activity Snapshot</h2>
-          <button className='rounded-xl border border-cyan-300/20 bg-[#101d3f] px-3 py-1.5 text-xs text-slate-300'>Daily</button>
+    <div className='min-h-screen bg-[#0f1419] p-6 md:p-10'>
+      <div className='max-w-7xl mx-auto space-y-8'>
+      <section className='bg-[#1a1f2e]/60 border border-gray-700/30 rounded-2xl p-8 backdrop-blur-sm shadow-lg shadow-gray-700/5'>
+        <div className='mb-6 flex items-center justify-between'>
+          <h2 className='text-2xl font-bold text-white'>Batch Activity Snapshot</h2>
+          <button className='rounded-lg border border-gray-700/30 bg-[#0f1419]/80 px-4 py-2 text-xs font-semibold text-gray-300 transition hover:bg-white/5'>Daily</button>
         </div>
 
-        <div className={isDarkTheme ? 'grid gap-3 sm:grid-cols-2 xl:grid-cols-5' : 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3'}>
+        <div className={isDarkTheme ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-5' : 'grid gap-6 sm:grid-cols-2 xl:grid-cols-5'}>
           {riskCards.map((card) => (
             <article
               key={card.title}
-              className='rounded-xl border border-cyan-300/10 bg-[#0d1734] p-3' 
+              className='bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-all duration-300 shadow-lg shadow-blue-500/5' 
             >
-              <div className='mb-3 flex items-center justify-between'>
-                <div className={`grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br ${card.color} text-cyan-100`}>
+              <div className='mb-4 flex items-center justify-between'>
+                <div className={`grid h-12 w-12 place-items-center rounded-lg bg-blue-500/20 text-blue-400`}>
                   {card.icon}
                 </div>
-                <span className='text-slate-500'>•••</span>
               </div>
-              <h3 className='text-3xl font-bold text-slate-100'>{card.value}</h3>
-              <p className='mt-1 text-xs text-slate-400'>{card.title}</p>       
+              <h3 className='text-3xl font-bold text-white'>{card.value}</h3>
+              <p className='mt-2 text-sm text-gray-400'>{card.title}</p>       
             </article>
           ))}
         </div>
@@ -448,7 +474,7 @@ const BatchrepSummary = () => {
           </div>
           <div className='h-72'>
             <ResponsiveContainer width='100%' height='100%'>
-              <LineChart data={monthlyThreatData}>
+              <LineChart data={dashboardMetrics.monthlyTrend}>
                 <CartesianGrid stroke='rgba(148,163,184,0.12)' vertical={false} />
                 <XAxis dataKey='month' stroke='#94a3b8' tick={{ fontSize: 11 }} />
                 <YAxis stroke='#94a3b8' tick={{ fontSize: 11 }} />
@@ -483,7 +509,7 @@ const BatchrepSummary = () => {
             <ResponsiveContainer width='100%' height='100%'>
               <PieChart>
                 <Pie
-                  data={[{ name: 'covered', value: 824 }, { name: 'left', value: 176 }]}
+                  data={[{ name: 'covered', value: Math.min(dashboardMetrics.engagementScore, 1000) }, { name: 'left', value: Math.max(0, 1000 - dashboardMetrics.engagementScore) }]}
                   innerRadius={72}
                   outerRadius={96}
                   startAngle={220}
@@ -499,7 +525,7 @@ const BatchrepSummary = () => {
             <div className='absolute inset-0 grid place-items-center text-center'>
               <div>
                 <p className='text-xs text-slate-400'>Score</p>
-                <p className='text-4xl font-bold text-slate-100'>824</p>        
+                <p className='text-4xl font-bold text-slate-100'>{dashboardMetrics.engagementScore}</p>        
               </div>
             </div>
           </div>
@@ -516,8 +542,8 @@ const BatchrepSummary = () => {
           <div className='h-48'>
             <ResponsiveContainer width='100%' height='100%'>
               <PieChart>
-                <Pie data={virusBreakdown} dataKey='value' innerRadius={48} outerRadius={72} paddingAngle={4}>
-                  {virusBreakdown.map((entry) => (
+                <Pie data={dashboardMetrics.eventsByCategory} dataKey='value' innerRadius={48} outerRadius={72} paddingAngle={4}>
+                  {dashboardMetrics.eventsByCategory.map((entry) => (
                     <Cell key={entry.name} fill={entry.color} />
                   ))}
                 </Pie>
@@ -525,7 +551,7 @@ const BatchrepSummary = () => {
             </ResponsiveContainer>
           </div>
           <ul className='grid grid-cols-2 gap-2 text-xs text-slate-300'>        
-            {virusBreakdown.map((entry) => (
+            {dashboardMetrics.eventsByCategory.map((entry) => (
               <li key={entry.name} className='flex items-center gap-2'>
                 <span className='h-2.5 w-2.5 rounded-full' style={{ backgroundColor: entry.color }} />
                 <span>{entry.name}</span>
@@ -542,7 +568,7 @@ const BatchrepSummary = () => {
 
           <div className='h-48'>
             <ResponsiveContainer width='100%' height='100%'>
-              <AreaChart data={deviceTrend}>
+              <AreaChart data={dashboardMetrics.weeklyAttendance}>
                 <defs>
                   <linearGradient id='deviceArea' x1='0' y1='0' x2='0' y2='1'>  
                     <stop offset='0%' stopColor='#22d3ee' stopOpacity={0.4} />  
@@ -830,6 +856,7 @@ const BatchrepSummary = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

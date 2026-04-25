@@ -1,0 +1,351 @@
+/* Modern UI Component Utilities */
+
+/* Card Enhancements */
+.ui-card {
+  @apply bg-[#1a1f2e]/60 border border-gray-700/30 rounded-2xl p-8 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.ui-card-sm {
+  @apply bg-[#1a1f2e]/60 border border-gray-700/30 rounded-xl p-6 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300;
+}
+
+.ui-card-accent {
+  @apply bg-gradient-to-br border rounded-2xl p-8 backdrop-blur-sm transition-all duration-300 hover:shadow-lg;
+}
+
+/* Table Enhancements */
+.ui-table-header {
+  @apply bg-gray-800/40 border-b border-gray-700/50 text-xs text-gray-400 uppercase tracking-wider font-semibold;
+}
+
+.ui-table-row {
+  @apply border-b border-gray-700/30 hover:bg-[#252d3d]/40 transition-colors duration-200;
+}
+
+.ui-table-cell {
+  @apply py-5 px-6 text-gray-300;
+}
+
+/* Status Badges */
+.ui-badge-success {
+  @apply inline-flex items-center px-3 py-1 bg-green-500/10 text-green-300 border border-green-500/30 rounded-full text-sm font-medium;
+}
+
+.ui-badge-warning {
+  @apply inline-flex items-center px-3 py-1 bg-orange-500/10 text-orange-300 border border-orange-500/30 rounded-full text-sm font-medium;
+}
+
+.ui-badge-danger {
+  @apply inline-flex items-center px-3 py-1 bg-red-500/10 text-red-300 border border-red-500/30 rounded-full text-sm font-medium;
+}
+
+.ui-badge-info {
+  @apply inline-flex items-center px-3 py-1 bg-blue-500/10 text-blue-300 border border-blue-500/30 rounded-full text-sm font-medium;
+}
+
+/* Form Inputs */
+.ui-input {
+  @apply w-full bg-[#0f1419] border border-gray-700/50 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200;
+}
+
+.ui-input-error {
+  @apply border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20;
+}
+
+.ui-input-success {
+  @apply border-green-500/50 focus:border-green-500/50 focus:ring-green-500/20;
+}
+
+.ui-textarea {
+  @apply w-full bg-[#0f1419] border border-gray-700/50 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200 resize-none;
+}
+
+.ui-label {
+  @apply block text-sm font-semibold text-gray-300 mb-2;
+}
+
+/* Buttons */
+.ui-btn {
+  @apply inline-flex items-center justify-center gap-2 font-medium transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed;
+}
+
+.ui-btn-primary {
+  @apply bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 rounded-lg px-5 py-3 text-sm;
+}
+
+.ui-btn-secondary {
+  @apply bg-gray-700/20 border border-gray-700/30 text-gray-300 hover:bg-gray-700/30 rounded-lg px-5 py-3 text-sm;
+}
+
+.ui-btn-success {
+  @apply bg-green-500/20 border border-green-500/30 text-green-300 hover:bg-green-500/30 rounded-lg px-5 py-3 text-sm;
+}
+
+.ui-btn-danger {
+  @apply bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 rounded-lg px-5 py-3 text-sm;
+}
+
+.ui-btn-ghost {
+  @apply text-gray-400 hover:text-gray-200 hover:bg-gray-700/20 rounded-lg px-5 py-3 text-sm;
+}
+
+/* Modal Styles */
+.ui-modal-backdrop {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4;
+}
+
+.ui-modal-content {
+  @apply w-full max-w-3xl bg-[#1a1f2e]/90 border border-gray-700/30 rounded-2xl p-8 shadow-2xl shadow-black/40 backdrop-blur-sm;
+}
+
+.ui-modal-header {
+  @apply mb-6 flex items-center justify-between gap-3;
+}
+
+.ui-modal-title {
+  @apply text-2xl font-bold text-white;
+}
+
+.ui-modal-close {
+  @apply rounded-lg border border-gray-700/30 bg-[#0f1419]/80 px-4 py-2 text-sm font-semibold text-gray-300 transition hover:bg-white/5;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.ui-animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.ui-animate-slideUp {
+  animation: slideInUp 0.4s ease-out;
+}
+
+.ui-animate-slideDown {
+  animation: slideInDown 0.4s ease-out;
+}
+
+.ui-animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.ui-animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.ui-animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Loading Skeleton */
+.ui-skeleton {
+  @apply bg-gray-700/20 rounded-lg animate-pulse;
+}
+
+.ui-skeleton-text {
+  @apply h-4 bg-gray-700/20 rounded animate-pulse;
+}
+
+.ui-skeleton-avatar {
+  @apply h-10 w-10 bg-gray-700/20 rounded-full animate-pulse;
+}
+
+/* Responsive Helper Classes */
+.ui-container {
+  @apply min-h-screen bg-[#0f1419] p-6 md:p-10;
+}
+
+.ui-container-inner {
+  @apply max-w-7xl mx-auto;
+}
+
+.ui-grid-responsive {
+  @apply grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+/* Hover Effects */
+.ui-hover-lift {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+.ui-hover-glow {
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20;
+}
+
+.ui-hover-dim {
+  @apply transition-all duration-300 hover:opacity-80;
+}
+
+/* Scrollbar Styling */
+.ui-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ui-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.ui-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 10px;
+}
+
+.ui-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
+
+.ui-input:hover:not(:disabled) {
+  @apply border-gray-600/50;
+}
+
+.ui-textarea {
+  @apply w-full bg-[#0f1419] border border-gray-700/50 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 resize transition-all duration-200;
+}
+
+.ui-label {
+  @apply block text-sm font-semibold text-gray-300 mb-2;
+}
+
+/* Buttons */
+.ui-btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 justify-center;
+}
+
+.ui-btn-primary {
+  @apply bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 hover:border-blue-500/50;
+}
+
+.ui-btn-secondary {
+  @apply bg-gray-700/20 border border-gray-600/30 text-gray-300 hover:bg-gray-700/30 hover:border-gray-600/50;
+}
+
+.ui-btn-success {
+  @apply bg-green-500/20 border border-green-500/30 text-green-300 hover:bg-green-500/30 hover:border-green-500/50;
+}
+
+.ui-btn-danger {
+  @apply bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 hover:border-red-500/50;
+}
+
+/* Modal */
+.ui-modal-backdrop {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4;
+}
+
+.ui-modal-content {
+  @apply w-full max-w-lg bg-[#1a1f2e] border border-gray-700/50 rounded-2xl p-8 shadow-2xl;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.ui-animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.ui-animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Loading Spinner */
+.ui-spinner {
+  @apply inline-block h-5 w-5 border-2 border-current border-r-transparent rounded-full animate-spin;
+}
+
+/* Responsive Spacing */
+@media (max-width: 768px) {
+  .ui-card {
+    @apply p-6;
+  }
+
+  .ui-modal-content {
+    @apply p-6;
+  }
+
+  .ui-table-cell {
+    @apply py-4 px-4 text-sm;
+  }
+}

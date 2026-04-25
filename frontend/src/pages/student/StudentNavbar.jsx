@@ -1,111 +1,193 @@
-import React, { useEffect, useState } from "react";
-import { FaUser, FaPowerOff, FaBell } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import ConfirmModal from "../components/ConfirmModal";
-import API from "../../api";
-import ThemeToggleButton from "../../components/ThemeToggleButton.jsx";
+import React, { useEffect, useState } from 'react';
+import { FaUser, FaPowerOff, FaBell } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import ConfirmModal from '../components/ConfirmModal';
+import API from '../../api';
+import ThemeToggleButton from '../../components/ThemeToggleButton.jsx';
 
 const StudentNavbar = () => {
-
   const { user, logout, loading } = useAuth();
   const [confirmOpen, setConfirmOpen] = useState(false);
-    const [notificationOpen, setNotificationOpen] = useState(false);
-        const [submissions, setSubmissions] = useState([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [submissions, setSubmissions] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) navigate("/login");
+    if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-    useEffect(() => {
-        const fetchSubmissions = async () => {
-            if (!user || !["student", "lecturer"].includes(user.u_role)) return;
-            try {
-                const res = await API.get("/submissions/student/my");
-                setSubmissions(res.data?.submissions || []);
-            } catch (err) {
-                setSubmissions([]);
-            }
-        };
-
-        fetchSubmissions();
-    }, [user]);
-
-    const formatDate = (value) => new Date(value).toLocaleDateString("en-GB");  
-
-    const getTimeLeftLabel = (value) => {
-        const due = new Date(value).getTime();
-        const now = Date.now();
-        const diff = due - now;
-
-        if (diff <= 0) return "Overdue";
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        if (days > 0) return `${days} day${days === 1 ? "" : "s"} left`;        
-
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        if (hours > 0) return `${hours} hour${hours === 1 ? "" : "s"} left`;    
-
-        const minutes = Math.max(1, Math.floor(diff / (1000 * 60)));
-        return `${minutes} minute${minutes === 1 ? "" : "s"} left`;
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user || !["student", "lecturer"].includes(user.u_role)) return;
+      try {
+        const [submissionRes, notificationRes] = await Promise.all([
+          API.get("/submissions/student/my"),
+          API.get("/submissions/student/notifications"),
+        ]);
+        setSubmissions(submissionRes.data?.submissions || []);
+        setNotifications(notificationRes.data?.notifications || []);
+        setUnreadCount(notificationRes.data?.unreadCount || 0);
+      } catch (err) {
+        setSubmissions([]);
+        setNotifications([]);
+      }
     };
+
+    fetchData();
+    // Poll for new notifications every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const formatDate = (value) => new Date(value).toLocaleDateString('en-GB');
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await API.post('/submissions/student/notifications/read-all');
+      setUnreadCount(0);
+      setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
+    } catch (err) {
+      console.error('Error marking notifications as read:', err);
+    }
+  };
 
   if (loading) return null;
 
-    return (
-        <div className='relative flex justify-between items-center bg-[#1a1f2e] border-b border-gray-700 h-16 px-6 my_font_family'>
-            <div className='flex items-center text-white space-x-3'>
-                <FaUser className='text-blue-500'/>
-                <h3 className="text-white font-semibold">Welcome, {user?.u_name}</h3>
-            </div>
-            <div className='flex items-center space-x-4'>
-                <ThemeToggleButton variant='compact' />
-                <button
-                    onClick={() => setNotificationOpen((prev) => !prev)}        
-                    className="relative p-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border border-yellow-500/50 rounded-lg transition"
-                >
-                    <FaBell className='text-lg'/>
-                    {submissions.length > 0 && (
-                        <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                            {submissions.length}
-                        </span>
-                    )}
-                </button>
-                <div id='bt_section' className='relative'>
-                    <button className="p-2 bg-red-500/20 text-red-400 border border-red-500 rounded-lg hover:bg-red-500/30 transition" onClick={() => setConfirmOpen(true)}> <FaPowerOff/> </button>
-                    <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-2 py-1 border border-red-500 bg-red-500/20 text-red-400 z-50 rounded whitespace-nowrap"><p>Log-out</p></div>
-                </div>
-            </div>
-
-            {notificationOpen && (
-                <div className='absolute right-6 top-16 z-50 w-[360px] max-h-[400px] overflow-y-auto rounded-xl border border-gray-700 bg-[#121a2e] p-3 shadow-2xl'>
-                    <h4 className='mb-2 text-sm font-semibold text-white'>Submission Notifications</h4>
-                    {submissions.length === 0 ? (
-                        <p className='text-xs text-gray-400'>No submissions for your year/semester right now.</p>
-                    ) : (
-                        <div className='space-y-2'>
-                            {submissions.map((item) => (
-                                <div key={item._id} className='rounded-lg border border-gray-700 bg-[#0f1628] p-3'>
-                                    <div className='flex items-start justify-between gap-2'>
-                                        <p className='text-sm font-semibold text-white'>{item.s_title}</p>
-                                        <span className='text-[11px] text-yellow-400'>{formatDate(item.s_dueDate)}</span>
-                                    </div>
-                                    <p className='mt-1 text-xs text-gray-300'>Module: {item.s_module}</p>
-                                    <p className='text-xs text-gray-400'>Year {item.s_year} / Semester {item.s_semester}</p>
-                                    <p className='text-xs text-cyan-300'>{getTimeLeftLabel(item.s_dueDate)}</p>
-                                    {item.s_description && <p className='mt-1 text-xs text-gray-400'>{item.s_description}</p>}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
-            <ConfirmModal show={confirmOpen} message="Are you sure you want to logout?"
-                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>     
-
+  return (
+    <div className="relative flex h-16 items-center justify-between border-b border-cyan-400/10 bg-[#070d1f]/95 px-4 md:px-6 my_font_family">
+      <div className="flex items-center gap-3 text-white">
+        <div className="rounded-lg bg-cyan-500/15 p-2 text-cyan-300">
+          <FaUser className="text-lg" />
         </div>
-    )
-}
+        <div>
+          <p className="text-xs font-semibold tracking-wide text-slate-400">WELCOME BACK</p>
+          <h3 className="font-bold text-slate-100">{user?.u_name}</h3>
+        </div>
+      </div>
 
-export default StudentNavbar
+      <div className="flex items-center gap-3">
+        <ThemeToggleButton variant="compact" />
+
+        <button
+          onClick={() => setNotificationOpen((prev) => !prev)}
+          className="relative rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-yellow-500 transition-all duration-200 hover:bg-yellow-500/20"
+          title="View notifications and submissions"
+        >
+          <FaBell className="text-lg" />
+          {(submissions.length > 0 || unreadCount > 0) && (
+            <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white shadow-lg">
+              {Math.max(submissions.length, unreadCount)}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setConfirmOpen(true)}
+          className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-rose-400 transition-all duration-200 hover:bg-rose-500/20"
+        >
+          <FaPowerOff />
+        </button>
+      </div>
+
+      {notificationOpen && (
+        <div className="absolute right-4 top-20 z-50 w-[400px] max-h-[600px] overflow-y-auto rounded-2xl border border-cyan-400/10 bg-[#070d1f]/95 p-6 backdrop-blur-xl shadow-2xl">
+          <div className="mb-6 flex items-center justify-between gap-2">
+            <h4 className="text-lg font-bold text-slate-100">Notifications</h4>
+            {unreadCount > 0 && (
+              <button
+                onClick={handleMarkAllAsRead}
+                className="text-xs font-medium text-cyan-300 underline hover:text-cyan-200"
+              >
+                Mark all read
+              </button>
+            )}
+          </div>
+
+          {notifications.length > 0 && (
+            <div className="mb-6 space-y-3 border-b border-slate-700/40 pb-6">
+              <h5 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                New Submissions
+              </h5>
+              {notifications.map((notif) => (
+                <div
+                  key={notif._id}
+                  className={`rounded-lg border p-3 text-xs transition-all ${
+                    notif.isRead
+                      ? 'border-slate-700/20 bg-[#0f1419]/40'
+                      : 'border-cyan-400/30 bg-cyan-500/10'
+                  }`}
+                >
+                  <p className={`font-semibold line-clamp-2 ${notif.isRead ? 'text-slate-400' : 'text-cyan-300'}`}>
+                    {notif.title}
+                  </p>
+                  {notif.submissionId && (
+                    <p className="mt-2 text-[10px] text-slate-400">
+                      Due: {formatDate(notif.submissionId.s_dueDate)}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {submissions.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="font-medium text-slate-400">No pending submissions</p>
+              <p className="mt-2 text-xs text-slate-500">New assignments appear here</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Active Submissions
+              </h5>
+              {submissions.map((item) => {
+                const isUrgent = new Date(item.s_dueDate) - Date.now() < 86400000;
+                const isOverdue = new Date(item.s_dueDate) < Date.now();
+
+                return (
+                  <div
+                    key={item._id}
+                    className={`rounded-lg border p-4 text-xs ${
+                      isOverdue
+                        ? 'border-red-500/30 bg-red-500/10'
+                        : isUrgent
+                        ? 'border-orange-500/30 bg-orange-500/10'
+                        : 'border-slate-700/30 bg-[#0f1419]/50'
+                    }`}
+                  >
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <p className="font-bold text-white">{item.s_title}</p>
+                      <span
+                        className={`text-[10px] font-bold ${
+                          isOverdue ? 'text-red-400' : isUrgent ? 'text-orange-400' : 'text-green-400'
+                        }`}
+                      >
+                        {isOverdue ? 'OVERDUE' : isUrgent ? 'URGENT' : 'OK'}
+                      </span>
+                    </div>
+                    <p className="mb-1 text-slate-400">Module: {item.s_module}</p>
+                    <p className="text-[10px] text-slate-500">
+                      Year {item.s_year} / Semester {item.s_semester}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      <ConfirmModal
+        show={confirmOpen}
+        message="Are you sure you want to logout?"
+        onConfirm={logout}
+        onCancel={() => setConfirmOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default StudentNavbar;

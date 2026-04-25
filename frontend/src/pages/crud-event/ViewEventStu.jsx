@@ -9,6 +9,9 @@ import {
   FaTag,
   FaClock,
   FaInfoCircle,
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import API from "../../api";
@@ -146,6 +149,16 @@ const ViewEventStu = () => {
 
   const event = details?.event;
   const isRegistered = details?.isRegistered;
+
+  const averageRating = Number(details?.ratingSummary?.average || 0);
+  const ratingCount =
+    details?.ratingSummary?.count ||
+    details?.ratingCount ||
+    details?.ratingSummary?.total ||
+    0;
+
+  const fullStars = Math.floor(averageRating);
+  const hasHalfStar = averageRating - fullStars >= 0.5;
 
   if (!event) {
     return (
@@ -320,10 +333,30 @@ const ViewEventStu = () => {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 mb-1">Average Rating</p>
-                  <p className="text-white font-medium">
-                    {details?.ratingSummary?.average || 0} / 5
-                  </p>
+                  <p className="text-gray-500 mb-2">Average Rating</p>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, index) => {
+                        if (index < fullStars) {
+                          return <FaStar key={index} className="text-yellow-400" />;
+                        }
+
+                        if (index === fullStars && hasHalfStar) {
+                          return <FaStarHalfAlt key={index} className="text-yellow-400" />;
+                        }
+
+                        return <FaRegStar key={index} className="text-gray-600" />;
+                      })}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-semibold">
+                        {averageRating.toFixed(1)} out of 5
+                      </p>
+                      <span className="text-gray-500">({ratingCount} ratings)</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-3">
@@ -455,7 +488,9 @@ const ViewEventStu = () => {
             </p>
 
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-300 mb-2">Reason *</label>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Reason *
+              </label>
               <select
                 value={unregisterReason}
                 onChange={(e) => setUnregisterReason(e.target.value)}
@@ -471,7 +506,9 @@ const ViewEventStu = () => {
             </div>
 
             <div className="mb-5">
-              <label className="block text-sm font-semibold text-gray-300 mb-2">Note (optional)</label>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Note (optional)
+              </label>
               <textarea
                 value={unregisterNote}
                 onChange={(e) => setUnregisterNote(e.target.value)}
@@ -504,9 +541,6 @@ const ViewEventStu = () => {
           </div>
         </div>
       )}
-
-
-
     </div>
   );
 };

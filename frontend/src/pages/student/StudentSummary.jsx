@@ -60,106 +60,143 @@ const StudentSummary = () => {
   ];
 
   return (
-    <div className='p-8 space-y-8'>
-      <div>
-        <h1 className='text-4xl font-bold text-white mb-2'>Welcome, {user?.u_name || 'Student'}</h1>
-        <p className='text-gray-400'>
-          {user?.u_role === 'lecturer' ? 'Lecture overview for submissions and portal activity' : "Here's your event portfolio overview"}
-        </p>
-      </div>
+    <div className='min-h-screen bg-[#0f1419] p-6 md:p-10'>
+      <div className='max-w-7xl mx-auto space-y-8'>
+        {/* Header */}
+        <div className='mb-12'>
+          <h1 className='text-5xl font-bold text-white mb-3'>Welcome, {user?.u_name || 'Student'}</h1>
+          <p className='text-gray-400 text-lg'>
+            {user?.u_role === 'lecturer' ? 'Lecture overview for submissions and portal activity' : 'Track your submissions and manage your academic progress'}
+          </p>
+        </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        <div className='lg:col-span-2 bg-[#1a1f2e] border border-gray-700 rounded-lg p-8'>
-          <div className='flex justify-between items-start mb-8'>
-            <div>
-              <p className='text-gray-400 text-sm mb-2'>Total Submissions Assigned</p>
-              <h2 className='text-5xl font-bold text-white'>{submissions.length}</h2>
-              <div className='flex items-center text-green-400 text-sm mt-4'>
-                <FaArrowUp className='mr-1' /> {activeSubmissions.length} active now
+        {/* KPI Cards Grid */}
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <div className='bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-2xl p-7 hover:border-blue-500/40 transition-all duration-300 shadow-lg shadow-blue-500/5'>
+            <div className='flex items-start justify-between mb-4'>
+              <div>
+                <p className='text-blue-300/70 text-xs font-semibold tracking-wide mb-2'>TOTAL SUBMISSIONS</p>
+                <h2 className='text-4xl font-bold text-white'>{submissions.length}</h2>
+              </div>
+              <div className='bg-blue-500/20 p-3 rounded-xl'>
+                <FaCalendarAlt className='text-blue-400 text-xl' />
               </div>
             </div>
-            <div className='inline-block bg-blue-500/20 p-4 rounded-lg'>
-              <FaCalendarAlt className='text-blue-500 text-2xl' />
+            <div className='flex items-center text-blue-300 text-sm'>
+              <FaArrowUp className='mr-2 text-xs' /> {activeSubmissions.length} active submissions
             </div>
           </div>
 
-          <ResponsiveContainer width='100%' height={80}>
+          <div className='bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-2xl p-7 hover:border-green-500/40 transition-all duration-300 shadow-lg shadow-green-500/5'>
+            <div className='flex items-start justify-between mb-4'>
+              <div>
+                <p className='text-green-300/70 text-xs font-semibold tracking-wide mb-2'>COMPLETED</p>
+                <h2 className='text-4xl font-bold text-white'>{submissions.length - activeSubmissions.length}</h2>
+              </div>
+              <div className='bg-green-500/20 p-3 rounded-xl'>
+                <svg className='w-6 h-6 text-green-400' fill='currentColor' viewBox='0 0 20 20'>
+                  <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
+                </svg>
+              </div>
+            </div>
+            <p className='text-green-300/70 text-sm'>All submissions submitted on time</p>
+          </div>
+
+          <div className='bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20 rounded-2xl p-7 hover:border-orange-500/40 transition-all duration-300 shadow-lg shadow-orange-500/5'>
+            <div className='flex items-start justify-between mb-4'>
+              <div>
+                <p className='text-orange-300/70 text-xs font-semibold tracking-wide mb-2'>PENDING</p>
+                <h2 className='text-4xl font-bold text-white'>{activeSubmissions.length}</h2>
+              </div>
+              <div className='bg-orange-500/20 p-3 rounded-xl'>
+                <FaClock className='text-orange-400 text-xl' />
+              </div>
+            </div>
+            <p className='text-orange-300/70 text-sm'>Awaiting submission</p>
+          </div>
+        </div>
+
+        {/* Chart Section */}
+        <div className='bg-[#1a1f2e]/60 border border-gray-700/30 rounded-2xl p-8 backdrop-blur-sm'>
+          <div className='flex justify-between items-center mb-8'>
+            <div>
+              <h3 className='text-white font-semibold text-xl'>Participation Trend</h3>
+              <p className='text-gray-400 text-sm mt-1'>Your submission activity over the past 6 months</p>
+            </div>
+            <div className='flex gap-2'>
+              <span className='px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-xs font-medium'>6M</span>
+              <span className='px-4 py-2 rounded-lg border border-gray-700/50 text-gray-400 text-xs font-medium'>3M</span>
+              <span className='px-4 py-2 rounded-lg border border-gray-700/50 text-gray-400 text-xs font-medium'>1M</span>
+            </div>
+          </div>
+          <ResponsiveContainer width='100%' height={280}>
             <LineChart data={chartData}>
-              <Line type='monotone' dataKey='registered' stroke='#3b82f6' strokeWidth={2} dot={false} />
+              <CartesianGrid strokeDasharray='3 3' stroke='#2a3142' vertical={false} />
+              <XAxis dataKey='month' stroke='#888' style={{ fontSize: '12px' }} />
+              <YAxis stroke='#888' style={{ fontSize: '12px' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#0f1419', border: '1px solid #2a3142', borderRadius: '12px' }} />
+              <Line type='monotone' dataKey='events' stroke='#3b82f6' strokeWidth={3} dot={{ fill: '#3b82f6', r: 5 }} activeDot={{ r: 7 }} />
+              <Line type='monotone' dataKey='registered' stroke='#10b981' strokeWidth={3} dot={{ fill: '#10b981', r: 5 }} activeDot={{ r: 7 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        <div className='space-y-3'>
-          <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-            <p className='text-gray-400 text-xs mb-2'>UPCOMING SUBMISSIONS</p>
-            <h3 className='text-3xl font-bold text-white'>{activeSubmissions.length}</h3>
-            <p className='text-green-400 text-xs mt-2'>Need your action</p>
+        {/* Submissions Table */}
+        <div className='bg-[#1a1f2e]/60 border border-gray-700/30 rounded-2xl p-8 backdrop-blur-sm overflow-hidden'>
+          <div className='mb-6'>
+            <h3 className='text-white font-semibold text-xl mb-1'>Submission Queue</h3>
+            <p className='text-gray-400 text-sm'>Track all your pending and upcoming submissions</p>
           </div>
-          <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-            <p className='text-gray-400 text-xs mb-2'>OVERDUE SUBMISSIONS</p>
-            <h3 className='text-3xl font-bold text-white'>{overdueSubmissions.length}</h3>
-            <p className='text-orange-400 text-xs mt-2'>Please submit soon</p>
-          </div>
-        </div>
-      </div>
-
-      <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-        <div className='flex justify-between items-center mb-6'>
-          <h3 className='text-white font-semibold text-lg'>Event Participation Performance</h3>
-          <div className='flex gap-2 text-xs text-gray-400'>
-            <span className='px-4 py-2 bg-blue-500/20 text-blue-400 rounded-full border border-blue-500/50'>1D</span>
-            <span className='px-4 py-2 rounded-full border border-gray-700'>1W</span>
-            <span className='px-4 py-2 rounded-full border border-gray-700'>1M</span>
-          </div>
-        </div>
-        <ResponsiveContainer width='100%' height={280}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray='3 3' stroke='#333' />
-            <XAxis dataKey='month' stroke='#888' />
-            <YAxis stroke='#888' />
-            <Tooltip contentStyle={{ backgroundColor: '#0f1419', border: '1px solid #333', borderRadius: '8px' }} />
-            <Line type='monotone' dataKey='events' stroke='#3b82f6' strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} />
-            <Line type='monotone' dataKey='registered' stroke='#10b981' strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className='bg-[#1a1f2e] border border-gray-700 rounded-lg p-6'>
-        <h3 className='text-white font-semibold text-lg mb-6'>Submission Overview</h3>
-        <div className='overflow-x-auto'>
-          <table className='w-full'>
-            <thead>
-              <tr className='border-b border-gray-700 text-xs text-gray-400'>
-                <th className='text-left py-3 px-4'>TITLE</th>
-                <th className='text-left py-3 px-4'>MODULE</th>
-                <th className='text-left py-3 px-4'>DUE DATE</th>
-                <th className='text-left py-3 px-4'>YEAR/SEM</th>
-                <th className='text-right py-3 px-4'>TIME LEFT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {submissions.length === 0 && (
-                <tr>
-                  <td colSpan='5' className='py-4 px-4 text-center text-sm text-gray-400'>No submission notifications right now.</td>
+          <div className='overflow-x-auto'>
+            <table className='w-full'>
+              <thead>
+                <tr className='border-b border-gray-700/50 text-xs text-gray-400 uppercase tracking-wider'>
+                  <th className='text-left py-4 px-6 font-semibold'>Submission Title</th>
+                  <th className='text-left py-4 px-6 font-semibold'>Module</th>
+                  <th className='text-left py-4 px-6 font-semibold'>Due Date</th>
+                  <th className='text-left py-4 px-6 font-semibold'>Level</th>
+                  <th className='text-right py-4 px-6 font-semibold'>Status</th>
                 </tr>
-              )}
-              {submissions.map((submission) => {
-                const countdown = getCountdown(submission.s_dueDate);
-                return (
-                  <tr key={submission._id} className='border-b border-gray-700/50 hover:bg-[#252d3d]/50 transition'>
-                    <td className='py-4 px-4 text-white font-medium'>{submission.s_title}</td>
-                    <td className='py-4 px-4 text-gray-300 text-sm'>{submission.s_module}</td>
-                    <td className='py-4 px-4 text-gray-400 text-sm'>{formatDate(submission.s_dueDate)}</td>
-                    <td className='py-4 px-4 text-gray-300 text-sm'>{submission.s_year} / {submission.s_semester}</td>
-                    <td className={`py-4 px-4 text-right font-semibold ${countdown.overdue ? 'text-red-400' : 'text-green-400'}`}>
-                      {countdown.label}
+              </thead>
+              <tbody className='divide-y divide-gray-700/30'>
+                {submissions.length === 0 && (
+                  <tr>
+                    <td colSpan='5' className='py-12 px-6 text-center'>
+                      <p className='text-gray-400 font-medium'>No submissions right now</p>
+                      <p className='text-gray-500 text-sm mt-1'>Check back soon for new assignments</p>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                )}
+                {submissions.map((submission) => {
+                  const countdown = getCountdown(submission.s_dueDate);
+                  const isUrgent = countdown.overdue || (new Date(submission.s_dueDate) - Date.now()) < 86400000; // less than 1 day
+                  return (
+                    <tr key={submission._id} className='hover:bg-[#252d3d]/40 transition-colors duration-200'>
+                      <td className='py-5 px-6 text-white font-medium'>{submission.s_title}</td>
+                      <td className='py-5 px-6 text-gray-300'>{submission.s_module}</td>
+                      <td className='py-5 px-6 text-gray-400'>{formatDate(submission.s_dueDate)}</td>
+                      <td className='py-5 px-6'>
+                        <span className='px-3 py-1 bg-blue-500/10 text-blue-300 rounded-full text-sm font-medium border border-blue-500/20'>
+                          Year {submission.s_year} / Sem {submission.s_semester}
+                        </span>
+                      </td>
+                      <td className='py-5 px-6 text-right'>
+                        <span className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                          countdown.overdue 
+                            ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
+                            : isUrgent 
+                            ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+                            : 'bg-green-500/20 text-green-300 border border-green-500/30'
+                        }`}>
+                          {countdown.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
