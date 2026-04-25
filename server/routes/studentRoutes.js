@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllStudents, getStudentById, setStudentManualInactive } from "../controllers/studentController.js";
+import { getAllStudents, getStudentById, getStudentsByBatch, setStudentManualInactive } from "../controllers/studentController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -8,6 +8,9 @@ const router = express.Router();
 router.use(protect);
 
 router.get("/", getAllStudents);
+
+router.get("/batch/:batchId", getStudentsByBatch);
+
 router.get("/:id", getStudentById);
 
 router.patch("/:id/manual-deactivate", protect, setStudentManualInactive);

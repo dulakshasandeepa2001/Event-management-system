@@ -1,11 +1,78 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
-import { FaCheckCircle, FaFileAlt, FaMoneyBillWave, FaBuilding, FaDownload,
-  FaHourglassHalf, FaTimesCircle, FaUsers, FaCalendarAlt, FaBell, FaUserTie, FaArrowUp, FaArrowDown } from 'react-icons/fa'
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend as ReLegend,
+import { FaCheckCircle, FaFileAlt, FaMoneyBillWave, FaBuilding, FaDownload,     
+  FaHourglassHalf, FaTimesCircle, FaUsers, FaCalendarAlt, FaBell, FaUserTie, FaArrowUp, FaArrowDown, FaSync } from 'react-icons/fa'
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend as ReLegend, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area, LineChart, Line } from 'recharts';
+import API from '../../api'
 
 const AdminSummary = () => {
+
+  const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterActive, setFilterActive] = useState("all");
+  const [totalStudents, setTotalStudents] = useState(0);
+  const [activeStudents, setActiveStudents] = useState(0);
+
+  useEffect(() => {
+    fetchAllStudents();
+    fetchStudentStats();
+  }, []);
+
+  const fetchStudentStats = async () => {
+    try {
+      const res = await API.get('/api/students?limit=1000&skip=0');
+      const allStudents = res.data.students || [];
+      setTotalStudents(allStudents.length);
+      setActiveStudents(allStudents.filter(s => s.u_isActive).length);
+    } catch (err) {
+      console.error('Failed to load student stats:', err);
+    }
+  };
+
+  const fetchAllStudents = async (search = "", active = "all") => {
+    setLoadingStudents(true);
+    try {
+      let url = '/api/students?limit=100&skip=0';
+
+      if (search.trim()) {
+        url += `&search=${encodeURIComponent(search)}`;
+      }
+
+      if (active !== "all") {
+        url += `&isActive=${active === "active"}`;
+      }
+
+      console.log('🔵 Fetching students from:', url);
+      const res = await API.get(url);
+      console.log('🟢 Students response:', res.data);
+
+      if (res.data && res.data.students) {
+        setStudents(res.data.students);
+        console.log('✅ Set students:', res.data.students.length, 'students');  
+      } else {
+        console.warn('⚠️ No students in response:', res.data);
+        setStudents([]);
+      }
+    } catch (err) {
+      console.error('❌ Failed to load students:', err);
+      console.error('Error details:', err.response?.data || err.message);       
+      setStudents([]);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    fetchAllStudents(value, filterActive);
+  };
+
+  const handleFilterActive = (value) => {
+    setFilterActive(value);
+    fetchAllStudents(searchTerm, value);
+  };
 
   // Mock data for charts
   const eventData = [
@@ -39,16 +106,16 @@ const AdminSummary = () => {
 
   return (
     <div className='p-8 space-y-8 bg-[#0f1419] min-h-screen text-white overflow-y-auto'>
-      
+
       {/* Header */}
       <div className='space-y-2'>
-        <h1 className='text-5xl font-bold text-white'>Admin Dashboard</h1>
+        <h1 className='text-5xl font-bold text-white'>Admin Dashboard</h1>      
         <p className='text-gray-400'>Welcome back! Here's your management overview</p>
       </div>
 
       {/* Key Stats Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-        
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>    
+
         {/* Total Events */}
         <div className='bg-gradient-to-br from-[#1a1f2e] to-[#0f1419] border border-gray-700 rounded-xl p-6 hover:border-blue-500 transition'>
           <div className='flex items-center justify-between mb-4'>
@@ -74,9 +141,9 @@ const AdminSummary = () => {
             </div>
           </div>
           <div className='space-y-2'>
-            <p className='text-3xl font-bold text-white'>892</p>
+            <p className='text-3xl font-bold text-white'>{totalStudents}</p>    
             <div className='flex items-center text-green-500 text-sm'>
-              <FaArrowUp className='mr-1' /> 8% from last month
+              <FaArrowUp className='mr-1' /> {activeStudents} active students   
             </div>
           </div>
         </div>
@@ -117,20 +184,20 @@ const AdminSummary = () => {
 
       {/* Charts Section */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        
+
         {/* Events & Registrations Trend */}
         <div className='lg:col-span-2 bg-gradient-to-br from-[#1a1f2e] to-[#0f1419] border border-gray-700 rounded-xl p-6'>
           <h3 className='text-lg font-bold text-white mb-6'>Events & Registration Trend</h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={eventData}>
               <defs>
-                <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">   
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>     
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>      
                 </linearGradient>
-                <linearGradient id="colorReg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                <linearGradient id="colorReg" x1="0" y1="0" x2="0" y2="1">      
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>     
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>      
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -171,15 +238,15 @@ const AdminSummary = () => {
 
       {/* Batch Overview & Recent Activities */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        
+
         {/* Batch Overview Table */}
         <div className='bg-gradient-to-br from-[#1a1f2e] to-[#0f1419] border border-gray-700 rounded-xl p-6'>
-          <h3 className='text-lg font-bold text-white mb-6'>Batch Overview</h3>
+          <h3 className='text-lg font-bold text-white mb-6'>Batch Overview</h3> 
           <div className='space-y-4'>
             {batchData.map((batch, i) => (
-              <div key={i} className='flex items-center justify-between p-4 bg-[#0f1419] hover:bg-[#1a1f2e] rounded-lg border border-gray-700 transition'>
+              <div key={i} className='flex items-center justify-between p-4 bg-[#0f1419] hover:bg-[#1a1f2e] rounded-lg border border-gray-700 transition'>      
                 <div>
-                  <p className='text-white font-semibold'>{batch.name}</p>
+                  <p className='text-white font-semibold'>{batch.name}</p>      
                   <p className='text-gray-400 text-sm'>{batch.students} students • {batch.events} events</p>
                 </div>
                 <div className='text-right'>
@@ -198,8 +265,8 @@ const AdminSummary = () => {
             {recentActivities.map((activity) => {
               const IconComponent = activity.icon;
               return (
-                <div key={activity.id} className='flex items-start gap-4 p-4 bg-[#0f1419] hover:bg-[#1a1f2e] rounded-lg border border-gray-700 transition'>
-                  <div className='bg-blue-500/20 p-3 rounded-lg flex-shrink-0'>
+                <div key={activity.id} className='flex items-start gap-4 p-4 bg-[#0f1419] hover:bg-[#1a1f2e] rounded-lg border border-gray-700 transition'>     
+                  <div className='bg-blue-500/20 p-3 rounded-lg flex-shrink-0'> 
                     <IconComponent className='text-blue-500 text-lg' />
                   </div>
                   <div className='flex-1 min-w-0'>
@@ -213,6 +280,102 @@ const AdminSummary = () => {
           </div>
         </div>
 
+      </div>
+
+      {/* Students Table Section */}
+      <div className='bg-gradient-to-br from-[#1a1f2e] to-[#0f1419] border border-gray-700 rounded-xl p-6'>
+        <div className='flex items-center justify-between mb-6'>
+          <div>
+            <h3 className='text-lg font-bold text-white'>All Students</h3>      
+            <p className='text-gray-400 text-sm mt-1'>{students.length} students loaded</p>
+          </div>
+          <button
+            onClick={() => {
+              fetchAllStudents(searchTerm, filterActive);
+              fetchStudentStats();
+            }}
+            disabled={loadingStudents}
+            className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50'
+          >
+            <FaSync className={loadingStudents ? 'animate-spin' : ''} />        
+            Refresh
+          </button>
+        </div>
+
+        {/* Search and Filters */}
+        <div className='flex gap-4 mb-6'>
+          <input
+            type="text"
+            placeholder="Search by name, email, or RegNo..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className='flex-1 px-4 py-2 bg-[#0f1419] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none'
+          />
+          <select
+            value={filterActive}
+            onChange={(e) => handleFilterActive(e.target.value)}
+            className='px-4 py-2 bg-[#0f1419] border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none'
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
+
+        {/* Students Table */}
+        <div className='overflow-x-auto'>
+          <table className='w-full'>
+            <thead className='border-b border-gray-600'>
+              <tr>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>ID</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>RegNo</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>Name</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>Email</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>Course</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>Year</th>
+                <th className='text-left py-3 px-4 text-gray-400 font-semibold text-sm'>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loadingStudents ? (
+                <tr>
+                  <td colSpan="7" className='py-8 text-center text-gray-400'>   
+                    <div className='flex justify-center items-center gap-2'>    
+                      <FaSync className='animate-spin' />
+                      Loading students...
+                    </div>
+                  </td>
+                </tr>
+              ) : students.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className='py-8 text-center text-gray-400'>   
+                    No students found
+                  </td>
+                </tr>
+              ) : (
+                students.map((student, idx) => (
+                  <tr key={student._id || idx} className='border-b border-gray-700 hover:bg-[#0f1419] transition'>
+                    <td className='py-3 px-4 text-gray-400 text-xs font-mono'>{(student._id || '—').substring(0, 8)}</td>
+                    <td className='py-3 px-4 text-white font-medium'>{student.u_regno || '—'}</td>
+                    <td className='py-3 px-4 text-gray-300'>{student.u_name || '—'}</td>
+                    <td className='py-3 px-4 text-gray-300 text-sm'>{student.u_email || '—'}</td>
+                    <td className='py-3 px-4 text-gray-300'>{student.u_course || '—'}</td>
+                    <td className='py-3 px-4 text-gray-300 text-center'>Year {student.u_year || 1}</td>
+                    <td className='py-3 px-4'>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        student.u_isActive
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {student.u_isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

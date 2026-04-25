@@ -10,12 +10,15 @@ const ProtectedRoute = ({ children, role, allowBatchRep = false }) => {
   if (!user) return <Navigate to="/login" replace />;
 
   if (role) {
-    // admin route, allow batch rep if requested
     if (role === "admin") {
       if (user.u_role !== "admin") {
         if (!(allowBatchRep && user.isBatchRep)) {
           return <Navigate to="/login" replace />;
         }
+      }
+    } else if (role === "batchrep") {
+      if (user.u_role !== "batchrep") {
+        return <Navigate to="/login" replace />;
       }
     } else if (user.u_role !== role) {
       return <Navigate to="/login" replace />;

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FaUser, FaPowerOff } from "react-icons/fa";
+import { FaUser, FaPowerOff, FaBell } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ConfirmModal from "../components/ConfirmModal";
+import ThemeToggleButton from "../../components/ThemeToggleButton.jsx";
 
 const AdminNavbar = () => {
 
@@ -15,7 +16,7 @@ const AdminNavbar = () => {
     if (!loading && !user) navigate("/login");
   }, [user, loading, navigate]);
 
-  if (loading) return null; // or spinner
+  if (loading) return null;
 
     return (
         <div className='flex justify-between items-center bg-[#1a1f2e] border-b border-gray-700 h-16 px-6 my_font_family'>
@@ -25,17 +26,22 @@ const AdminNavbar = () => {
                 </div>
                 <h3 className="text-white font-semibold">Welcome, {user?.u_name}</h3>
             </div>
-            <div>
+            <div className='flex items-center space-x-4'>
+                <ThemeToggleButton variant='compact' />
+                <button className="relative p-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border border-yellow-500/50 rounded-lg transition">     
+                    <FaBell className='text-lg'/>
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
                 <div id='bt_section' className='relative'>
-                    <button className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 border border-red-500/50 rounded-lg transition" onClick={() => setConfirmOpen(true)}> 
-                        <FaPowerOff className='text-lg'/> 
+                    <button className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 border border-red-500/50 rounded-lg transition" onClick={() => setConfirmOpen(true)}>
+                        <FaPowerOff className='text-lg'/>
                     </button>
                     <div id="bt_text_main" className="absolute my_font_family text-xs font-bold px-2 py-1 border border-gray-600 bg-[#1a1f2e] text-white rounded z-50 right-0 mt-1"><p>Logout</p></div>
                 </div>
             </div>
-            {/* ConfirmModal */}
             <ConfirmModal show={confirmOpen} message="Are you sure you want to logout?"
-                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>            
+                onConfirm={logout} onCancel={() => setConfirmOpen(false)}/>     
+
         </div>
     )
 }
