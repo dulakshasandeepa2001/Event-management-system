@@ -21,11 +21,11 @@ const StudentNavbar = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user || !['student', 'lecturer'].includes(user.u_role)) return;
+      if (!user || !["student", "lecturer"].includes(user.u_role)) return;
       try {
         const [submissionRes, notificationRes] = await Promise.all([
-          API.get('/submissions/student/my'),
-          API.get('/submissions/student/notifications'),
+          API.get("/submissions/student/my"),
+          API.get("/submissions/student/notifications"),
         ]);
         setSubmissions(submissionRes.data?.submissions || []);
         setNotifications(notificationRes.data?.notifications || []);
@@ -33,11 +33,11 @@ const StudentNavbar = () => {
       } catch (err) {
         setSubmissions([]);
         setNotifications([]);
-        setUnreadCount(0);
       }
     };
 
     fetchData();
+    // Poll for new notifications every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, [user]);

@@ -10,6 +10,8 @@ import {
   FaClock,
   FaInfoCircle,
   FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import API from "../../api";
@@ -62,7 +64,13 @@ const ViewEvent = () => {
   const registeredStudents = details?.registeredStudents || [];
   const cancelledStudents = details?.cancelledStudents || [];
   const comments = details?.comments || [];
+
   const ratingSummary = details?.ratingSummary || { count: 0, average: 0 };
+  const averageRating = Number(ratingSummary.average || 0);
+  const ratingCount = Number(ratingSummary.count || 0);
+
+  const fullStars = Math.floor(averageRating);
+  const hasHalfStar = averageRating - fullStars >= 0.5;
 
   return (
     <div className="min-h-screen bg-[#0f1419] text-white p-6 md:p-8 overflow-y-auto">
@@ -200,9 +208,36 @@ const ViewEvent = () => {
                 </div>
                 <div className="bg-[#1a1f2e] border border-gray-700 rounded-lg p-4">
                   <p className="text-gray-500 text-sm">Avg Rating</p>
-                  <p className="text-2xl font-bold text-yellow-400">
-                    {ratingSummary.average} / 5
-                  </p>
+
+                  {ratingCount > 0 ? (
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, index) => {
+                          if (index < fullStars) {
+                            return <FaStar key={index} className="text-yellow-400" />;
+                          }
+
+                          if (index === fullStars && hasHalfStar) {
+                            return <FaStarHalfAlt key={index} className="text-yellow-400" />;
+                          }
+
+                          return <FaRegStar key={index} className="text-gray-600" />;
+                        })}
+                      </div>
+
+                      <p className="text-sm font-semibold text-yellow-400">
+                        {averageRating.toFixed(1)} / 5
+                      </p>
+
+                      <span className="text-xs text-gray-500">
+                        ({ratingCount} ratings)
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-semibold text-gray-500 mt-2">
+                      No ratings yet
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -319,8 +354,6 @@ const ViewEvent = () => {
             {tab === "comments" && (
               <div className="space-y-4">
                 <div className="bg-[#0f1419] border border-gray-700 rounded-xl p-5">
-                  
-                  {/* Header */}
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold">Comments</h3>
 
@@ -332,7 +365,6 @@ const ViewEvent = () => {
                     </button>
                   </div>
 
-                  {/* Show only latest 5 */}
                   {comments.length === 0 ? (
                     <p className="text-gray-400">No comments yet.</p>
                   ) : (
