@@ -32,6 +32,7 @@ const EditEvent = () => {
   }, []);
 
   const myBatchId =
+    currentUser?.u_batchId ||
     currentUser?.batchId ||
     currentUser?.u_batch ||
     currentUser?.batch ||

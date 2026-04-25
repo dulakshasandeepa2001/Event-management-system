@@ -97,7 +97,7 @@ const BatchrepSidebar = () => {
                   <p className={isDarkTheme ? 'text-sm font-semibold text-slate-100' : 'text-sm font-semibold text-slate-900'}>Need to publish updates?</p>
                   <p className='mt-1 text-xs text-slate-400'>Share event notices and announcements quickly.</p>
                   <button
-                     onClick={() => navigate('/events')}
+                     onClick={() => navigate('/batchrep-dashboard/list-event')}
                      className={helperButtonClassName}
                   >
                      Open Event Board

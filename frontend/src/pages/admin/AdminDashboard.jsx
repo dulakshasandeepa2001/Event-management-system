@@ -1,21 +1,20 @@
-import AdminSidebar from './AdminSidebar'
-import AdminNavbar from './AdminNavbar'
-import { Outlet } from 'react-router-dom'
+import AdminSidebar from './AdminSidebar';
+import AdminNavbar from './AdminNavbar';
+import { Outlet } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  return (
+    <div className="min-h-screen bg-[#050b18] text-slate-100 my_font_family">
+      <AdminSidebar />
 
-    return (
-        <div className='flex bg-[#0f1419] min-h-screen'>
-           <AdminSidebar/>
-
-           <div className='flex-1 flex flex-col ml-48'>
-                <AdminNavbar />
-                <div className='flex-1 overflow-y-auto'>
-                    <Outlet/>
-                </div>
-            </div>
-        </div>
-    );
+      <div className="lg:pl-72">
+        <AdminNavbar />
+        <main className="p-4 md:p-6 lg:p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default AdminDashboard;

@@ -110,15 +110,20 @@ const StudentSubmissions = () => {
       formData.append('file', selectedFile);
       formData.append('comment', comment);
 
-      await API.post(`/submissions/${selectedSubmission._id}/upload`, formData, {
+      const response = await API.post(`/submissions/${selectedSubmission._id}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setUploadMessage('File uploaded successfully');
+      // Show success message
+      setUploadMessage('✓ Submission successful! Your file has been uploaded.');
+      
+      // Refresh data to update the table immediately
       await fetchData();
+      
+      // Close modal after a brief delay
       setTimeout(() => {
         setIsUploadModalOpen(false);
-      }, 700);
+      }, 1500);
     } catch (err) {
       setUploadMessage(err.response?.data?.message || 'Upload failed');
     } finally {
@@ -135,54 +140,71 @@ const StudentSubmissions = () => {
         </p>
       </section>
 
-      <section className='rounded-2xl border border-gray-700 bg-[#1a1f2e] p-5'>
-        <h3 className='mb-4 text-lg font-semibold text-white'>Submissions</h3>
+      <section className='rounded-2xl border border-gray-700/30 bg-[#1a1f2e]/60 backdrop-blur-sm p-8'>
+        <div className='mb-8'>
+          <h3 className='text-xl font-bold text-white mb-2'>Your Submissions</h3>
+          <p className='text-gray-400 text-sm'>Upload your work before the due date to ensure timely submission</p>
+        </div>
 
         <div className='overflow-x-auto'>
           <table className='w-full'>
             <thead>
-              <tr className='border-b border-gray-700 text-left text-xs uppercase tracking-wider text-gray-400'>
-                <th className='px-3 py-2'>Title</th>
-                <th className='px-3 py-2'>Module</th>
-                <th className='px-3 py-2'>Due Date</th>
-                <th className='px-3 py-2'>Time Left</th>
-                <th className='px-3 py-2'>Upload Status</th>
-                <th className='px-3 py-2'>Action</th>
+              <tr className='border-b border-gray-700/50 text-left text-xs uppercase tracking-wider text-gray-400 font-semibold'>
+                <th className='px-6 py-4'>Submission Title</th>
+                <th className='px-6 py-4'>Module</th>
+                <th className='px-6 py-4'>Due Date</th>
+                <th className='px-6 py-4'>Time Left</th>
+                <th className='px-6 py-4'>Status</th>
+                <th className='px-6 py-4'>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='divide-y divide-gray-700/30'>
               {submissions.length === 0 && (
                 <tr>
-                  <td className='px-3 py-4 text-center text-gray-400' colSpan='6'>No submissions available.</td>
+                  <td colSpan='6' className='px-6 py-12 text-center'>
+                    <p className='text-gray-400 font-medium'>No submissions available</p>
+                    <p className='text-gray-500 text-sm mt-1'>New assignments will appear here</p>
+                  </td>
                 </tr>
               )}
               {submissions.map((item) => {
                 const upload = uploadsBySubmissionId[String(item._id)];
                 const status = upload ? (upload.status === 'resubmitted' ? 'Re-Submitted' : 'Submitted') : 'Not Submitted';
-                const statusClass = upload ? 'text-green-400' : 'text-orange-400';
+                const isUrgent = new Date(item.s_dueDate) - Date.now() < 86400000; // less than 1 day
+                const isOverdue = new Date(item.s_dueDate) < Date.now();
 
                 return (
-                  <tr key={item._id} className='border-b border-gray-700/50 text-sm text-gray-200'>
-                    <td className='px-3 py-3 font-semibold'>{item.s_title}</td>
-                    <td className='px-3 py-3'>{item.s_module}</td>
-                    <td className='px-3 py-3'>{formatDate(item.s_dueDate)}</td>
-                    <td className='px-3 py-3'>{getTimeLeftLabel(item.s_dueDate)}</td>
-                    <td className={`px-3 py-3 ${statusClass}`}>{status}</td>
-                    <td className='px-3 py-3'>
+                  <tr key={item._id} className='hover:bg-[#252d3d]/40 transition-colors duration-200'>
+                    <td className='px-6 py-5 font-semibold text-white'>{item.s_title}</td>
+                    <td className='px-6 py-5 text-gray-300'>{item.s_module}</td>
+                    <td className='px-6 py-5 text-gray-400'>{formatDate(item.s_dueDate)}</td>
+                    <td className='px-6 py-5'>
+                      <span className={`font-medium ${isOverdue ? 'text-red-400' : isUrgent ? 'text-orange-400' : 'text-green-400'}`}>
+                        {getTimeLeftLabel(item.s_dueDate)}
+                      </span>
+                    </td>
+                    <td className='px-6 py-5'>
+                      <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium border ${
+                        upload ? 'bg-green-500/10 text-green-300 border-green-500/30' : 'bg-orange-500/10 text-orange-300 border-orange-500/30'
+                      }`}>
+                        {status}
+                      </span>
+                    </td>
+                    <td className='px-6 py-5'>
                       <div className='flex items-center gap-2'>
                         <button
                           onClick={() => openDetailsModal(item)}
-                          className='inline-flex items-center gap-2 rounded-lg bg-purple-500/20 px-3 py-2 text-xs text-purple-300 hover:bg-purple-500/30'
+                          className='inline-flex items-center gap-2 rounded-lg bg-purple-500/20 border border-purple-500/30 px-3 py-2 text-xs font-medium text-purple-300 hover:bg-purple-500/30 transition-colors'
                           title='View submission details and description'
                         >
-                          <FaEye />
-                          View Details
+                          <FaEye className='text-sm' />
+                          View
                         </button>
 
                         <button
                           onClick={() => openUploadModal(item)}
                           disabled={!canUpload}
-                          className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 px-3 py-2 text-xs text-blue-300 hover:bg-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50'
+                          className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2 text-xs font-medium text-blue-300 hover:bg-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-gray-700/30 transition-colors'
                         >
                           <FaFileUpload />
                           {canUpload ? (upload ? 'Re-Upload' : 'Upload') : 'View Only'}
@@ -278,48 +300,77 @@ const StudentSubmissions = () => {
               <p className='text-sm text-gray-400'>{selectedSubmission.s_title} ({selectedSubmission.s_module})</p>
             </div>
 
-            <form onSubmit={handleUpload} className='space-y-3'>
-              <label className='block'>
-                <span className='mb-1 block text-sm text-gray-300'>Choose file</span>
-                <input
-                  type='file'
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  className='w-full rounded-lg border border-gray-700 bg-[#0f1419] px-3 py-2 text-sm text-gray-200'
-                  required
-                />
-              </label>
+            {uploadMessage && uploadMessage.includes('Submission successful') ? (
+              // Success state
+              <div className='py-8 text-center'>
+                <div className='mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20'>
+                  <svg className='h-8 w-8 text-green-400' fill='currentColor' viewBox='0 0 20 20'>
+                    <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
+                  </svg>
+                </div>
+                <h4 className='text-lg font-semibold text-white'>Submission Successful!</h4>
+                <p className='mt-2 text-sm text-gray-300'>Your file has been uploaded and will be reviewed by your instructor.</p>
+              </div>
+            ) : (
+              // Upload form
+              <form onSubmit={handleUpload} className='space-y-3'>
+                <label className='block'>
+                  <span className='mb-1 block text-sm text-gray-300'>Choose file</span>
+                  <input
+                    type='file'
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    className='w-full rounded-lg border border-gray-700 bg-[#0f1419] px-3 py-2 text-sm text-gray-200'
+                    required
+                  />
+                </label>
 
-              <label className='block'>
-                <span className='mb-1 block text-sm text-gray-300'>Comment (optional)</span>
-                <textarea
-                  rows='3'
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className='w-full rounded-lg border border-gray-700 bg-[#0f1419] px-3 py-2 text-sm text-gray-200'
-                  placeholder='Add a short note for your upload'
-                />
-              </label>
+                <label className='block'>
+                  <span className='mb-1 block text-sm text-gray-300'>Comment (optional)</span>
+                  <textarea
+                    rows='3'
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className='w-full rounded-lg border border-gray-700 bg-[#0f1419] px-3 py-2 text-sm text-gray-200'
+                    placeholder='Add a short note for your upload'
+                  />
+                </label>
 
-              {uploadMessage && <p className='text-sm text-cyan-300'>{uploadMessage}</p>}
+                {uploadMessage && (
+                  <p className='rounded-lg border border-red-700/50 bg-red-500/10 px-3 py-2 text-sm text-red-300'>
+                    {uploadMessage}
+                  </p>
+                )}
 
-              <div className='mt-2 flex justify-end gap-2'>
+                <div className='mt-2 flex justify-end gap-2'>
+                  <button
+                    type='button'
+                    onClick={() => setIsUploadModalOpen(false)}
+                    className='rounded-lg border border-gray-600 px-3 py-2 text-xs text-gray-300 hover:bg-gray-700/20'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type='submit'
+                    disabled={isUploading}
+                    className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 px-3 py-2 text-xs font-semibold text-blue-200 hover:bg-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50'
+                  >
+                    <FaCloudUploadAlt />
+                    {isUploading ? 'Uploading...' : 'Upload File'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {uploadMessage && uploadMessage.includes('Submission successful') && (
+              <div className='mt-4 flex justify-end'>
                 <button
-                  type='button'
                   onClick={() => setIsUploadModalOpen(false)}
-                  className='rounded-lg border border-gray-600 px-3 py-2 text-xs text-gray-300 hover:bg-gray-700/20'
+                  className='rounded-lg border border-green-600/50 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-300 hover:bg-green-500/20'
                 >
-                  Cancel
-                </button>
-                <button
-                  type='submit'
-                  disabled={isUploading}
-                  className='inline-flex items-center gap-2 rounded-lg bg-blue-500/20 px-3 py-2 text-xs font-semibold text-blue-200 hover:bg-blue-500/30 disabled:cursor-not-allowed disabled:opacity-50'
-                >
-                  <FaCloudUploadAlt />
-                  {isUploading ? 'Uploading...' : 'Upload File'}
+                  Close
                 </button>
               </div>
-            </form>
+            )}
           </div>
         </div>
       )}

@@ -1,23 +1,20 @@
-import StudentSidebar from './StudentSidebar'
-import StudentNavbar from './StudentNavbar'
-import { Outlet } from 'react-router-dom'
+import StudentSidebar from './StudentSidebar';
+import StudentNavbar from './StudentNavbar';
+import { Outlet } from 'react-router-dom';
 
 const StudentDashboard = () => {
+  return (
+    <div className="min-h-screen bg-[#050b18] text-slate-100 my_font_family">
+      <StudentSidebar />
 
-    return (
-        <div className="flex h-screen bg-[#0f1419]">
-            <StudentSidebar />
-
-            <div className='flex-1 flex flex-col bg-[#0f1419] ml-48'>
-                <StudentNavbar />
-                
-                {/* Main scrollable content */}
-                <div className='flex-1 overflow-y-auto bg-[#0f1419]'>
-                    <Outlet />
-                </div>
-            </div>
-        </div>
-    );
+      <div className="lg:pl-72">
+        <StudentNavbar />
+        <main className="p-4 md:p-6 lg:p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default StudentDashboard;
