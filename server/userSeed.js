@@ -6,11 +6,26 @@ dotenv.config();
 import bcrypt from "bcryptjs";
 import User from "./models/User.js";
 import Rep from "./models/Rep.js";
+import Batch from "./models/Batch.js";
 import { connectDB } from "./db/db.js";
 
 export const seedUsers = async ({ ensureConnection = true } = {}) => {
     if (ensureConnection) {
         await connectDB();
+    }
+
+    // Create test batch
+    let testBatch = await Batch.findOne({ batchCode: "2023JAN" });
+    if (!testBatch) {
+        testBatch = await Batch.create({
+            name: "2023-Jan",
+            intakeYear: 2023,
+            course: "Bachelor of Technology",
+            batchCode: "2023JAN",
+            semesterCount: 8,
+            isActive: true,
+        });
+        console.log("Test batch created:", testBatch._id);
     }
 
     const adminUser = {
@@ -36,7 +51,9 @@ export const seedUsers = async ({ ensureConnection = true } = {}) => {
         r_email: "brep1@example.com",
         r_password: await bcrypt.hash("brep1", 10),
         r_role: "batchrep",
-        isBatchRep: true
+        isBatchRep: true,
+        u_batchId: testBatch._id,
+        u_batchCode: "2023JAN"
     };
 
     try {

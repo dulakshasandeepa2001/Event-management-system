@@ -16,6 +16,9 @@ import marksRoutes from "./routes/marksRoutes.js";
 import deadlineRoutes from './routes/deadlineRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import chatbotRoutes from './routes/chatbotRoutes.js';
+import aiAgentRoutes from './routes/aiAgentRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -35,10 +38,14 @@ app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/batch", batchRoutes);
 app.use("/api/event", eventRoutes);
+app.use("/api/events", eventRoutes);
 app.use("/api/marks", marksRoutes);
 app.use("/api/deadlines", deadlineRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/agent", aiAgentRoutes);
 
 const PORT = process.env.PORT || 5001;
 

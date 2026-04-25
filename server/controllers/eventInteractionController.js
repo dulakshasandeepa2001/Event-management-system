@@ -1,5 +1,6 @@
 import Event from "../models/Event.js";
 import User from "../models/User.js";
+import Rep from "../models/Rep.js";
 import EventRegistration from "../models/EventRegistration.js";
 import EventComment from "../models/EventComment.js";
 import EventRating from "../models/EventRating.js";
@@ -16,10 +17,37 @@ const getUserBatchId = (userDoc) => {
   );
 };
 
+const normalizeRepAccount = (rep) => {
+  if (!rep) return null;
+
+  return {
+    ...rep,
+    _id: rep._id,
+    id: rep._id,
+    u_name: rep.r_name,
+    u_email: rep.r_email,
+    u_role: rep.r_role || "batchrep",
+    isBatchRep: true,
+    sourceModel: "Rep",
+  };
+};
+
 const getCurrentUser = async (req) => {
   const userId = getUserId(req.user);
   if (!userId) return null;
-  return User.findById(userId).lean();
+
+  if (req.user?.sourceModel === "Rep" || req.user?.isBatchRep) {
+    const rep = await Rep.findById(userId).lean();
+    if (rep) return normalizeRepAccount(rep);
+  }
+
+  const user = await User.findById(userId).lean();
+  if (user) return user;
+
+  const rep = await Rep.findById(userId).lean();
+  if (rep) return normalizeRepAccount(rep);
+
+  return null;
 };
 
 const canViewEvent = (user, event) => {
@@ -35,11 +63,20 @@ const canViewEvent = (user, event) => {
     return { ok: true };
   }
 
-  if (user.u_role === "student" || user.u_role === "batchrep") {
+  if (user.u_role === "student") {
     const myBatchId = getUserBatchId(user);
     const eventBatchId = event.batch?._id?.toString() || event.batch?.toString();
 
     if (!myBatchId || String(myBatchId) !== String(eventBatchId)) {
+      return { ok: false, status: 403, message: "Not allowed to view this event" };
+    }
+  }
+
+  if (user.u_role === "batchrep") {
+    const myBatchId = getUserBatchId(user);
+    const eventBatchId = event.batch?._id?.toString() || event.batch?.toString();
+
+    if (myBatchId && String(myBatchId) !== String(eventBatchId)) {
       return { ok: false, status: 403, message: "Not allowed to view this event" };
     }
   }

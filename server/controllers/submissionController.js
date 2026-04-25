@@ -1,6 +1,8 @@
 import Submission from "../models/Submission.js";
 import SubmissionUpload from "../models/SubmissionUpload.js";
 import SubmissionActivity from "../models/SubmissionActivity.js";
+import Notification from "../models/Notification.js";
+import User from "../models/User.js";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
@@ -130,6 +132,36 @@ export const createSubmission = async (req, res) => {
       createdBy: req.user._id,
       createdByModel: req.user.sourceModel || "User",
     });
+
+    // Send notifications to all eligible students in the same year/semester
+    try {
+      const eligibleStudents = await User.find({
+        u_year: normalized.s_year,
+        u_semester: normalized.s_semester,
+        u_role: "student",
+        u_isActive: true,
+      });
+
+      if (eligibleStudents.length > 0) {
+        const notifications = eligibleStudents.map((student) => ({
+          studentId: student._id,
+          submissionId: submission._id,
+          type: "submission_created",
+          title: `New Submission: ${normalized.s_title}`,
+          message: `A new submission "${normalized.s_title}" has been assigned to you. Due date: ${new Date(normalized.s_dueDate).toLocaleDateString("en-GB")}`,
+          metadata: {
+            submissionTitle: normalized.s_title,
+            submissionModule: normalized.s_module,
+            dueDate: normalized.s_dueDate,
+          },
+        }));
+
+        await Notification.insertMany(notifications);
+      }
+    } catch (notificationErr) {
+      // Log error but don't fail the submission creation
+      console.error("Failed to create notifications:", notificationErr.message);
+    }
 
     return res.status(201).json({ submission });
   } catch (err) {
@@ -525,6 +557,91 @@ export const getSubmissionEngagementDetails = async (req, res) => {
     });
   } catch (err) {
     console.error("getSubmissionEngagementDetails error:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ==================== NOTIFICATION ENDPOINTS ====================
+
+export const getStudentNotifications = async (req, res) => {
+  try {
+    if (!req.user || req.user.u_role !== "student") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const { isRead } = req.query;
+    const filter = { studentId: req.user._id };
+
+    if (isRead !== undefined) {
+      filter.isRead = isRead === "true";
+    }
+
+    const notifications = await Notification.find(filter)
+      .populate("submissionId", "s_title s_module s_dueDate")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const unreadCount = await Notification.countDocuments({
+      studentId: req.user._id,
+      isRead: false,
+    });
+
+    return res.status(200).json({ notifications, unreadCount });
+  } catch (err) {
+    console.error("getStudentNotifications error:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const markNotificationAsRead = async (req, res) => {
+  try {
+    if (!req.user || req.user.u_role !== "student") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const { id } = req.params;
+
+    const notification = await Notification.findOneAndUpdate(
+      { _id: id, studentId: req.user._id },
+      {
+        $set: {
+          isRead: true,
+          readAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    return res.status(200).json({ notification });
+  } catch (err) {
+    console.error("markNotificationAsRead error:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    if (!req.user || req.user.u_role !== "student") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const result = await Notification.updateMany(
+      { studentId: req.user._id, isRead: false },
+      {
+        $set: {
+          isRead: true,
+          readAt: new Date(),
+        },
+      }
+    );
+
+    return res.status(200).json({ message: "All notifications marked as read", modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error("markAllNotificationsAsRead error:", err.message);
     return res.status(500).json({ message: "Server error" });
   }
 };
