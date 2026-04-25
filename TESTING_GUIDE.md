@@ -389,3 +389,9 @@ For questions or issues:
 
 **Happy Testing! 🎉**
 
+<<<<<<< HEAD
+=======
+git config --global user.name "Your New Name"
+git config --global user.email "newemail@example.com"
+GIT_AUTHOR_DATE="2026-04-01T12:00:00" GIT_COMMITTER_DATE="2026-04-01T12:00:00" git commit -m "updates event ai parts"
+>>>>>>> f2e1606494f3da8ee91c73fe2d38cebe0d6ef80f

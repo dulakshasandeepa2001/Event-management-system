@@ -385,3 +385,7 @@ PUT /api/users/:id - Update user
 **Deployed By:** _______________  
 **Verified By:** _______________
 
+<<<<<<< HEAD
+=======
+GIT_AUTHOR_DATE="2026-04-16T12:00:00" GIT_COMMITTER_DATE="2026-04-16T12:00:00" git commit -m " lectures ui make changes"
+>>>>>>> f2e1606494f3da8ee91c73fe2d38cebe0d6ef80f
